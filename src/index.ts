@@ -1,3 +1,5 @@
+import { initFAQ } from './components/faq';
+import { initMobileNav } from './components/nav/mobileNav';
 import { initSplide } from './components/splide/initSplide';
 
 function boot() {
@@ -80,7 +82,11 @@ function whenWebflowReady(cb: () => void) {
 
 whenWebflowReady(() => {
   // Small delay to let Webflow finish layout/interactions
-  setTimeout(boot, 100);
+  setTimeout(() => {
+    boot();
+    initFAQ();
+    initMobileNav();
+  }, 100);
 });
 
 // Expose helper if you want to call it from the Webflow console
