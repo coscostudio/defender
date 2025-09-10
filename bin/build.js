@@ -11,8 +11,10 @@ const ENTRY_POINTS = ['src/index.ts'];
 
 // Config dev serving
 const LIVE_RELOAD = !PRODUCTION;
-const SERVE_PORT = 3000;
-const SERVE_ORIGIN = `http://localhost:${SERVE_PORT}`;
+// Allow overriding port/host via env when 3000 is busy
+const SERVE_HOST = process.env.HOST || 'localhost';
+const SERVE_PORT = Number(process.env.PORT || process.env.SERVE_PORT || 3000);
+const SERVE_ORIGIN = `http://${SERVE_HOST}:${SERVE_PORT}`;
 
 // Create context
 const context = await esbuild.context({
@@ -37,18 +39,26 @@ if (PRODUCTION) {
 // Watch and serve files in dev
 else {
   await context.watch();
-  await context
-    .serve({
+  try {
+    const server = await context.serve({
       servedir: BUILD_DIRECTORY,
       port: SERVE_PORT,
-    })
-    .then(logServedFiles);
+      host: '0.0.0.0',
+    });
+    logServedFiles(server);
+  } catch (err) {
+    if (String(err).includes('address already in use')) {
+      // eslint-disable-next-line no-console
+      console.error(`\n[dev] Port ${SERVE_PORT} is in use. Try: PORT=3001 pnpm dev\n`);
+    }
+    throw err;
+  }
 }
 
 /**
  * Logs information about the files that are being served during local development.
  */
-function logServedFiles() {
+function logServedFiles(server) {
   /**
    * Recursively gets all files in a directory.
    * @param {string} dirPath
@@ -71,7 +81,8 @@ function logServedFiles() {
 
       // Normalize path and create file location
       const paths = file.split(sep);
-      paths[0] = SERVE_ORIGIN;
+      const origin = `http://${SERVE_HOST}:${server.port}`;
+      paths[0] = origin;
 
       const location = paths.join('/');
 
