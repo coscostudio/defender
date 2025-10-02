@@ -1,5 +1,3 @@
-import { initFAQ } from './components/faq';
-import { initMobileNav } from './components/nav/mobileNav';
 import { initSplide } from './components/splide/initSplide';
 
 function boot() {
@@ -72,20 +70,36 @@ function boot() {
 }
 
 function whenWebflowReady(cb: () => void) {
-  const wf: any = (window as any).Webflow;
-  if (wf && typeof wf.push === 'function') {
-    wf.push(cb);
-  } else {
-    window.addEventListener('load', () => setTimeout(cb, 100));
-  }
+  const tryPush = (attempt = 0) => {
+    const wf: any = (window as any).Webflow;
+    if (wf && typeof wf.push === 'function') {
+      wf.push(cb);
+      return;
+    }
+
+    if (document.readyState === 'complete') {
+      cb();
+      return;
+    }
+
+    if (attempt < 20) {
+      window.setTimeout(() => tryPush(attempt + 1), 50);
+    } else {
+      if (document.readyState === 'complete') {
+        cb();
+      } else {
+        window.addEventListener('load', cb, { once: true });
+      }
+    }
+  };
+
+  tryPush();
 }
 
 whenWebflowReady(() => {
   // Small delay to let Webflow finish layout/interactions
   setTimeout(() => {
     boot();
-    initFAQ();
-    initMobileNav();
   }, 100);
 });
 
