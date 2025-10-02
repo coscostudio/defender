@@ -1,15 +1,2900 @@
-"use strict";(()=>{var j={animationDuration:300,easing:"cubic-bezier(0.4, 0, 0.2, 1)",stagger:50,allowMultipleOpen:!0};function rr(e,t){e.style.overflow="hidden",e.style.transition=`max-height ${j.animationDuration}ms ${j.easing}, opacity ${j.animationDuration}ms ${j.easing}, padding ${j.animationDuration}ms ${j.easing}`,e.style.maxHeight="0",e.style.opacity="0",e.style.paddingTop="0",e.style.paddingBottom="0",t.style.transition=`transform ${j.animationDuration}ms ${j.easing}`,t.style.transform="rotate(0deg)",t.style.transformOrigin="center"}function ir(e,t){e.removeAttribute("data-delay"),e.removeAttribute("data-hover"),t.style.display="block",e.classList.remove("w--open")}function Qt(e,t,n,r){e.classList.add("w--open"),t.style.maxHeight="none",t.style.opacity="1";let o=t.scrollHeight;t.style.maxHeight="0",t.style.opacity="0",t.offsetHeight,requestAnimationFrame(()=>{t.style.maxHeight=o+"px",t.style.opacity="1",t.style.paddingTop="",t.style.paddingBottom="",n.style.transform="rotate(180deg)"}),window.setTimeout(()=>{t.style.maxHeight="none",r&&r()},j.animationDuration)}function Jt(e,t,n,r){let o=t.scrollHeight;t.style.maxHeight=o+"px",t.offsetHeight,requestAnimationFrame(()=>{t.style.maxHeight="0",t.style.opacity="0",t.style.paddingTop="0",t.style.paddingBottom="0",n.style.transform="rotate(0deg)"}),window.setTimeout(()=>{e.classList.remove("w--open"),r&&r()},j.animationDuration)}function en(e){let t=document.querySelectorAll(".faq-dropdown.w--open");if(t.length===0){e&&e();return}let n=0,r=t.length;t.forEach(o=>{let s=o.querySelector(".faq-dropdown-list"),i=o.querySelector(".faq-dropdown-toggle-icon");!s||!i||Jt(o,s,i,()=>{n++,n===r&&e&&window.setTimeout(e,j.stagger)})})}function Zt(){document.querySelectorAll(".faq-dropdown.w--open").forEach(t=>{let n=t.querySelector(".faq-dropdown-list"),r=t.querySelector(".faq-dropdown-toggle-icon");n&&r&&(n.style.maxHeight="none",n.style.opacity="1",n.style.paddingTop="",n.style.paddingBottom="",r.style.transform="rotate(180deg)")})}function or(){let e=document.createElement("style");e.textContent=`
-    .faq-dropdown-list { transform-origin: top; }
-    .faq-dropdown-toggle { cursor: pointer; user-select: none; }
-    .faq-dropdown-toggle:hover .faq-dropdown-toggle-icon {
-      color: var(--background-color--background-light-green, #9ce069);
-      transition: color 200ms ease;
+"use strict";
+(() => {
+  // bin/live-reload.js
+  new EventSource(`${"http://localhost:3000"}/esbuild`).addEventListener("change", () => location.reload());
+
+  // node_modules/.pnpm/@splidejs+splide@4.1.4/node_modules/@splidejs/splide/dist/js/splide.esm.js
+  function _defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
     }
-    .faq-dropdown-list * {
-      transition: opacity ${j.animationDuration*.8}ms ${j.easing} ${j.animationDuration*.2}ms;
+  }
+  function _createClass(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties(Constructor, staticProps);
+    Object.defineProperty(Constructor, "prototype", { writable: false });
+    return Constructor;
+  }
+  var MEDIA_PREFERS_REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
+  var CREATED = 1;
+  var MOUNTED = 2;
+  var IDLE = 3;
+  var MOVING = 4;
+  var SCROLLING = 5;
+  var DRAGGING = 6;
+  var DESTROYED = 7;
+  var STATES = {
+    CREATED,
+    MOUNTED,
+    IDLE,
+    MOVING,
+    SCROLLING,
+    DRAGGING,
+    DESTROYED
+  };
+  function empty(array) {
+    array.length = 0;
+  }
+  function slice(arrayLike, start, end) {
+    return Array.prototype.slice.call(arrayLike, start, end);
+  }
+  function apply(func) {
+    return func.bind.apply(func, [null].concat(slice(arguments, 1)));
+  }
+  var nextTick = setTimeout;
+  var noop = function noop2() {
+  };
+  function raf(func) {
+    return requestAnimationFrame(func);
+  }
+  function typeOf(type, subject) {
+    return typeof subject === type;
+  }
+  function isObject(subject) {
+    return !isNull(subject) && typeOf("object", subject);
+  }
+  var isArray = Array.isArray;
+  var isFunction = apply(typeOf, "function");
+  var isString = apply(typeOf, "string");
+  var isUndefined = apply(typeOf, "undefined");
+  function isNull(subject) {
+    return subject === null;
+  }
+  function isHTMLElement(subject) {
+    try {
+      return subject instanceof (subject.ownerDocument.defaultView || window).HTMLElement;
+    } catch (e) {
+      return false;
     }
-    .faq-dropdown { contain: layout style; }
-  `,document.head.appendChild(e)}function ar(e){let t=e.querySelector(".faq-dropdown-toggle"),n=e.querySelector(".faq-dropdown-list"),r=e.querySelector(".faq-dropdown-toggle-icon");if(!t||!n||!r){console.warn("Missing required elements in dropdown:",e);return}rr(n,r),ir(e,n),t.addEventListener("click",o=>{if(o.preventDefault(),o.stopPropagation(),e.classList.contains("w--open")){Jt(e,n,r);return}j.allowMultipleOpen?Qt(e,n,r):en(()=>Qt(e,n,r))})}function Tt(){let e=document.querySelectorAll(".faq-dropdown");if(e.length===0){console.warn("No FAQ dropdowns found");return}e.forEach(t=>ar(t)),console.log(`Initialized ${e.length} FAQ dropdowns with animations`)}function tn(){or(),Tt(),Zt(),window.reinitializeFAQAnimations=()=>{Tt(),Zt()},window.faqAnimationDebug={config:j,initializeFAQAnimations:Tt,closeAllDropdowns:en}}function sr(e){if(window.gsap){e();return}let t=document.createElement("script");t.src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js",t.onload=e,document.head.appendChild(t)}function nn(){let e=()=>{sr(t)};document.readyState==="loading"?document.addEventListener("DOMContentLoaded",e,{once:!0}):e();function t(){let{gsap:n}=window;if(!n)return;let r=document.getElementById("nav-show"),o=document.getElementById("nav-hide"),s=document.querySelector(".nav-mobile"),i=Array.from(document.querySelectorAll(".nav-mobile-link")),a=document.querySelector(".nav-container");if(!r||!o||!s||!a||i.length===0)return;let c=.28,l=.07,u=!1,m=!1,h=!1,v=null,f=null,d=r,E=o,g=s,y=a;n.set(g,{display:"none",height:0,opacity:0,overflow:"hidden"}),n.set(i,{y:-20,opacity:0});function p(){return c+l*(i.length-1)}function I(){let S={display:g.style.display,height:g.style.height,opacity:g.style.opacity,visibility:g.style.visibility,position:g.style.position,pointerEvents:g.style.pointerEvents};n.set(g,{display:"flex",height:"auto",opacity:1,visibility:"hidden",position:"absolute",pointerEvents:"none"});let L=i.map(M=>({y:n.getProperty(M,"y"),opacity:n.getProperty(M,"opacity")}));n.set(i,{y:0,opacity:1});let P=Math.ceil(g.scrollHeight);return i.forEach((M,q)=>n.set(M,{y:L[q].y,opacity:L[q].opacity})),n.set(g,S),P}function _(){h||(document.addEventListener("click",A),h=!0)}function x(){h&&(document.removeEventListener("click",A),h=!1)}function A(S){y.contains(S.target)||b()}function D(){f&&f.disconnect(),!(typeof ResizeObserver>"u")&&(f=new ResizeObserver(()=>{if(u){let S=Math.ceil(g.scrollHeight);n.set(g,{height:S})}}),f.observe(g))}function F(){f&&(f.disconnect(),f=null)}function O(S){if(S&&S.preventDefault(),m||u)return;m=!0,d.style.display="none",E.style.display="flex";let L=I(),P=p()+.08;n.set(g,{display:"flex",height:0,opacity:1}),v&&v.kill(),v=n.timeline({defaults:{overwrite:"auto"},onComplete:()=>{m=!1,u=!0,_(),D()}}),v.to(g,{height:L,duration:P,ease:"power1.out"},0),v.to(i,{opacity:1,y:0,duration:c,stagger:{each:l,from:0},ease:"power2.out",onStart:()=>i.forEach(M=>M.style.transition="none"),onComplete:()=>i.forEach(M=>M.style.transition="")},0)}function b(S){if(S&&S.currentTarget===o&&S.preventDefault(),m||!u)return;m=!0,x(),F();let L=Math.ceil(g.scrollHeight),P=Math.max(.18,c*.8),M=P+l*(i.length-1)+.06;n.set(g,{height:L,overflow:"hidden"}),v&&v.kill(),v=n.timeline({defaults:{overwrite:"auto"},onComplete:()=>{n.set(g,{display:"none",height:0,opacity:0}),d.style.display="flex",E.style.display="none",m=!1,u=!1}}),v.to(i,{opacity:0,y:-15,duration:P,stagger:{each:l,from:"end"},ease:"power1.in",onStart:()=>i.forEach(q=>q.style.transition="none"),onComplete:()=>i.forEach(q=>q.style.transition="")},0),v.to(g,{height:0,duration:M,ease:"power2.in"},.02)}d.addEventListener("click",O),E.addEventListener("click",b),i.forEach(S=>S.addEventListener("mousedown",()=>b())),window.addEventListener("resize",()=>{window.innerWidth>991&&u&&b()}),window.mobileNav={open:O,close:b}}}function rn(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}function ur(e,t,n){return t&&rn(e.prototype,t),n&&rn(e,n),Object.defineProperty(e,"prototype",{writable:!1}),e}var on="(prefers-reduced-motion: reduce)",Ie=1,cr=2,Ne=3,xe=4,Ke=5,at=6,lt=7,lr={CREATED:Ie,MOUNTED:cr,IDLE:Ne,MOVING:xe,SCROLLING:Ke,DRAGGING:at,DESTROYED:lt};function he(e){e.length=0}function Se(e,t,n){return Array.prototype.slice.call(e,t,n)}function z(e){return e.bind.apply(e,[null].concat(Se(arguments,1)))}var yn=setTimeout,Ot=function(){};function an(e){return requestAnimationFrame(e)}function ht(e,t){return typeof t===e}function We(e){return!Ht(e)&&ht("object",e)}var xt=Array.isArray,Sn=z(ht,"function"),pe=z(ht,"string"),je=z(ht,"undefined");function Ht(e){return e===null}function An(e){try{return e instanceof(e.ownerDocument.defaultView||window).HTMLElement}catch{return!1}}function Qe(e){return xt(e)?e:[e]}function re(e,t){Qe(e).forEach(t)}function Ft(e,t){return e.indexOf(t)>-1}function st(e,t){return e.push.apply(e,Qe(t)),e}function fe(e,t,n){e&&re(t,function(r){r&&e.classList[n?"add":"remove"](r)})}function se(e,t){fe(e,pe(t)?t.split(" "):t,!0)}function Ze(e,t){re(t,e.appendChild.bind(e))}function kt(e,t){re(e,function(n){var r=(t||n).parentNode;r&&r.insertBefore(n,t)})}function ze(e,t){return An(e)&&(e.msMatchesSelector||e.matches).call(e,t)}function bn(e,t){var n=e?Se(e.children):[];return t?n.filter(function(r){return ze(r,t)}):n}function Je(e,t){return t?bn(e,t)[0]:e.firstElementChild}var Ge=Object.keys;function Te(e,t,n){return e&&(n?Ge(e).reverse():Ge(e)).forEach(function(r){r!=="__proto__"&&t(e[r],r)}),e}function Be(e){return Se(arguments,1).forEach(function(t){Te(t,function(n,r){e[r]=t[r]})}),e}function me(e){return Se(arguments,1).forEach(function(t){Te(t,function(n,r){xt(n)?e[r]=n.slice():We(n)?e[r]=me({},We(e[r])?e[r]:{},n):e[r]=n})}),e}function sn(e,t){re(t||Ge(e),function(n){delete e[n]})}function ue(e,t){re(e,function(n){re(t,function(r){n&&n.removeAttribute(r)})})}function k(e,t,n){We(t)?Te(t,function(r,o){k(e,o,r)}):re(e,function(r){Ht(n)||n===""?ue(r,t):r.setAttribute(t,String(n))})}function Re(e,t,n){var r=document.createElement(e);return t&&(pe(t)?se(r,t):k(r,t)),n&&Ze(n,r),r}function ie(e,t,n){if(je(n))return getComputedStyle(e)[t];Ht(n)||(e.style[t]=""+n)}function Ue(e,t){ie(e,"display",t)}function wn(e){e.setActive&&e.setActive()||e.focus({preventScroll:!0})}function oe(e,t){return e.getAttribute(t)}function un(e,t){return e&&e.classList.contains(t)}function te(e){return e.getBoundingClientRect()}function Le(e){re(e,function(t){t&&t.parentNode&&t.parentNode.removeChild(t)})}function Tn(e){return Je(new DOMParser().parseFromString(e,"text/html").body)}function le(e,t){e.preventDefault(),t&&(e.stopPropagation(),e.stopImmediatePropagation())}function Ln(e,t){return e&&e.querySelector(t)}function Vt(e,t){return t?Se(e.querySelectorAll(t)):[]}function de(e,t){fe(e,t,!1)}function It(e){return e.timeStamp}function we(e){return pe(e)?e:e?e+"px":""}var et="splide",qt="data-"+et;function Ve(e,t){if(!e)throw new Error("["+et+"] "+(t||""))}var Ee=Math.min,ft=Math.max,dt=Math.floor,$e=Math.ceil,J=Math.abs;function _n(e,t,n){return J(e-t)<n}function ut(e,t,n,r){var o=Ee(t,n),s=ft(t,n);return r?o<e&&e<s:o<=e&&e<=s}function De(e,t,n){var r=Ee(t,n),o=ft(t,n);return Ee(ft(r,e),o)}function Rt(e){return+(e>0)-+(e<0)}function Mt(e,t){return re(t,function(n){e=e.replace("%s",""+n)}),e}function Wt(e){return e<10?"0"+e:""+e}var cn={};function fr(e){return""+e+Wt(cn[e]=(cn[e]||0)+1)}function Cn(){var e=[];function t(i,a,c,l){o(i,a,function(u,m,h){var v="addEventListener"in u,f=v?u.removeEventListener.bind(u,m,c,l):u.removeListener.bind(u,c);v?u.addEventListener(m,c,l):u.addListener(c),e.push([u,m,h,c,f])})}function n(i,a,c){o(i,a,function(l,u,m){e=e.filter(function(h){return h[0]===l&&h[1]===u&&h[2]===m&&(!c||h[3]===c)?(h[4](),!1):!0})})}function r(i,a,c){var l,u=!0;return typeof CustomEvent=="function"?l=new CustomEvent(a,{bubbles:u,detail:c}):(l=document.createEvent("CustomEvent"),l.initCustomEvent(a,u,!1,c)),i.dispatchEvent(l),l}function o(i,a,c){re(i,function(l){l&&re(a,function(u){u.split(" ").forEach(function(m){var h=m.split(".");c(l,h[0],h[1])})})})}function s(){e.forEach(function(i){i[4]()}),he(e)}return{bind:t,unbind:n,dispatch:r,destroy:s}}var Ce="mounted",ln="ready",ye="move",tt="moved",Dn="click",dr="active",vr="inactive",hr="visible",gr="hidden",X="refresh",ee="updated",Xe="resize",zt="resized",mr="drag",pr="dragging",Er="dragged",Gt="scroll",He="scrolled",yr="overflow",On="destroy",Sr="arrows:mounted",Ar="arrows:updated",br="pagination:mounted",wr="pagination:updated",In="navigation:mounted",Rn="autoplay:play",Tr="autoplay:playing",Mn="autoplay:pause",Nn="lazyload:loaded",Pn="sk",xn="sh",vt="ei";function U(e){var t=e?e.event.bus:document.createDocumentFragment(),n=Cn();function r(s,i){n.bind(t,Qe(s).join(" "),function(a){i.apply(i,xt(a.detail)?a.detail:[])})}function o(s){n.dispatch(t,s,Se(arguments,1))}return e&&e.event.on(On,n.destroy),Be(n,{bus:t,on:r,off:z(n.unbind,t),emit:o})}function gt(e,t,n,r){var o=Date.now,s,i=0,a,c=!0,l=0;function u(){if(!c){if(i=e?Ee((o()-s)/e,1):1,n&&n(i),i>=1&&(t(),s=o(),r&&++l>=r))return h();a=an(u)}}function m(g){g||f(),s=o()-(g?i*e:0),c=!1,a=an(u)}function h(){c=!0}function v(){s=o(),i=0,n&&n(i)}function f(){a&&cancelAnimationFrame(a),i=0,a=0,c=!0}function d(g){e=g}function E(){return c}return{start:m,rewind:v,pause:h,cancel:f,set:d,isPaused:E}}function Lr(e){var t=e;function n(o){t=o}function r(o){return Ft(Qe(o),t)}return{set:n,is:r}}function _r(e,t){var n=gt(t||0,e,null,1);return function(){n.isPaused()&&n.start()}}function Cr(e,t,n){var r=e.state,o=n.breakpoints||{},s=n.reducedMotion||{},i=Cn(),a=[];function c(){var f=n.mediaQuery==="min";Ge(o).sort(function(d,E){return f?+d-+E:+E-+d}).forEach(function(d){u(o[d],"("+(f?"min":"max")+"-width:"+d+"px)")}),u(s,on),m()}function l(f){f&&i.destroy()}function u(f,d){var E=matchMedia(d);i.bind(E,"change",m),a.push([f,E])}function m(){var f=r.is(lt),d=n.direction,E=a.reduce(function(g,y){return me(g,y[1].matches?y[0]:{})},{});sn(n),v(E),n.destroy?e.destroy(n.destroy==="completely"):f?(l(!0),e.mount()):d!==n.direction&&e.refresh()}function h(f){matchMedia(on).matches&&(f?me(n,s):sn(n,Ge(s)))}function v(f,d,E){me(n,f),d&&me(Object.getPrototypeOf(n),f),(E||!r.is(Ie))&&e.emit(ee,n)}return{setup:c,destroy:l,reduce:h,set:v}}var mt="Arrow",pt=mt+"Left",Et=mt+"Right",Hn=mt+"Up",Fn=mt+"Down";var fn="rtl",yt="ttb",Lt={width:["height"],left:["top","right"],right:["bottom","left"],x:["y"],X:["Y"],Y:["X"],ArrowLeft:[Hn,Et],ArrowRight:[Fn,pt]};function Dr(e,t,n){function r(s,i,a){a=a||n.direction;var c=a===fn&&!i?1:a===yt?0:-1;return Lt[s]&&Lt[s][c]||s.replace(/width|left|right/i,function(l,u){var m=Lt[l.toLowerCase()][c]||l;return u>0?m.charAt(0).toUpperCase()+m.slice(1):m})}function o(s){return s*(n.direction===fn?1:-1)}return{resolve:r,orient:o}}var ve="role",Me="tabindex",Or="disabled",ae="aria-",nt=ae+"controls",kn=ae+"current",dn=ae+"selected",ne=ae+"label",Bt=ae+"labelledby",Vn=ae+"hidden",Ut=ae+"orientation",Ye=ae+"roledescription",vn=ae+"live",hn=ae+"busy",gn=ae+"atomic",$t=[ve,Me,Or,nt,kn,ne,Bt,Vn,Ut,Ye],ce=et+"__",Ae="is-",_t=et,mn=ce+"track",Ir=ce+"list",St=ce+"slide",qn=St+"--clone",Rr=St+"__container",Xt=ce+"arrows",At=ce+"arrow",Wn=At+"--prev",zn=At+"--next",bt=ce+"pagination",Gn=bt+"__page",Mr=ce+"progress",Nr=Mr+"__bar",Yt=ce+"toggle",Ci=Yt+"__play",Di=Yt+"__pause",Pr=ce+"spinner",xr=ce+"sr",Hr=Ae+"initialized",_e=Ae+"active",Bn=Ae+"prev",Un=Ae+"next",Nt=Ae+"visible",Pt=Ae+"loading",$n=Ae+"focus-in",Xn=Ae+"overflow",Fr=[_e,Nt,Bn,Un,Pt,$n,Xn],kr={slide:St,clone:qn,arrows:Xt,arrow:At,prev:Wn,next:zn,pagination:bt,page:Gn,spinner:Pr};function Vr(e,t){if(Sn(e.closest))return e.closest(t);for(var n=e;n&&n.nodeType===1&&!ze(n,t);)n=n.parentElement;return n}var qr=5,pn=200,Yn="touchstart mousedown",Ct="touchmove mousemove",Dt="touchend touchcancel mouseup click";function Wr(e,t,n){var r=U(e),o=r.on,s=r.bind,i=e.root,a=n.i18n,c={},l=[],u=[],m=[],h,v,f;function d(){p(),I(),y()}function E(){o(X,g),o(X,d),o(ee,y),s(document,Yn+" keydown",function(A){f=A.type==="keydown"},{capture:!0}),s(i,"focusin",function(){fe(i,$n,!!f)})}function g(A){var D=$t.concat("style");he(l),de(i,u),de(h,m),ue([h,v],D),ue(i,A?D:["style",Ye])}function y(){de(i,u),de(h,m),u=x(_t),m=x(mn),se(i,u),se(h,m),k(i,ne,n.label),k(i,Bt,n.labelledby)}function p(){h=_("."+mn),v=Je(h,"."+Ir),Ve(h&&v,"A track/list element is missing."),st(l,bn(v,"."+St+":not(."+qn+")")),Te({arrows:Xt,pagination:bt,prev:Wn,next:zn,bar:Nr,toggle:Yt},function(A,D){c[D]=_("."+A)}),Be(c,{root:i,track:h,list:v,slides:l})}function I(){var A=i.id||fr(et),D=n.role;i.id=A,h.id=h.id||A+"-track",v.id=v.id||A+"-list",!oe(i,ve)&&i.tagName!=="SECTION"&&D&&k(i,ve,D),k(i,Ye,a.carousel),k(v,ve,"presentation")}function _(A){var D=Ln(i,A);return D&&Vr(D,"."+_t)===i?D:void 0}function x(A){return[A+"--"+n.type,A+"--"+n.direction,n.drag&&A+"--draggable",n.isNavigation&&A+"--nav",A===_t&&_e]}return Be(c,{setup:d,mount:E,destroy:g})}var Pe="slide",Fe="loop",rt="fade";function zr(e,t,n,r){var o=U(e),s=o.on,i=o.emit,a=o.bind,c=e.Components,l=e.root,u=e.options,m=u.isNavigation,h=u.updateOnMove,v=u.i18n,f=u.pagination,d=u.slideFocus,E=c.Direction.resolve,g=oe(r,"style"),y=oe(r,ne),p=n>-1,I=Je(r,"."+Rr),_;function x(){p||(r.id=l.id+"-slide"+Wt(t+1),k(r,ve,f?"tabpanel":"group"),k(r,Ye,v.slide),k(r,ne,y||Mt(v.slideLabel,[t+1,e.length]))),A()}function A(){a(r,"click",z(i,Dn,H)),a(r,"keydown",z(i,Pn,H)),s([tt,xn,He],b),s(In,F),h&&s(ye,O)}function D(){_=!0,o.destroy(),de(r,Fr),ue(r,$t),k(r,"style",g),k(r,ne,y||"")}function F(){var N=e.splides.map(function(T){var R=T.splide.Components.Slides.getAt(t);return R?R.slide.id:""}).join(" ");k(r,ne,Mt(v.slideX,(p?n:t)+1)),k(r,nt,N),k(r,ve,d?"button":""),d&&ue(r,Ye)}function O(){_||b()}function b(){if(!_){var N=e.index;S(),L(),fe(r,Bn,t===N-1),fe(r,Un,t===N+1)}}function S(){var N=M();N!==un(r,_e)&&(fe(r,_e,N),k(r,kn,m&&N||""),i(N?dr:vr,H))}function L(){var N=q(),T=!N&&(!M()||p);if(e.state.is([xe,Ke])||k(r,Vn,T||""),k(Vt(r,u.focusableNodes||""),Me,T?-1:""),d&&k(r,Me,T?-1:0),N!==un(r,Nt)&&(fe(r,Nt,N),i(N?hr:gr,H)),!N&&document.activeElement===r){var R=c.Slides.getAt(e.index);R&&wn(R.slide)}}function P(N,T,R){ie(R&&I||r,N,T)}function M(){var N=e.index;return N===t||u.cloneStatus&&N===n}function q(){if(e.is(rt))return M();var N=te(c.Elements.track),T=te(r),R=E("left",!0),V=E("right",!0);return dt(N[R])<=$e(T[R])&&dt(T[V])<=$e(N[V])}function B(N,T){var R=J(N-t);return!p&&(u.rewind||e.is(Fe))&&(R=Ee(R,e.length-R)),R<=T}var H={index:t,slideIndex:n,slide:r,container:I,isClone:p,mount:x,destroy:D,update:b,style:P,isWithin:B};return H}function Gr(e,t,n){var r=U(e),o=r.on,s=r.emit,i=r.bind,a=t.Elements,c=a.slides,l=a.list,u=[];function m(){h(),o(X,v),o(X,h)}function h(){c.forEach(function(b,S){d(b,S,-1)})}function v(){_(function(b){b.destroy()}),he(u)}function f(){_(function(b){b.update()})}function d(b,S,L){var P=zr(e,S,L,b);P.mount(),u.push(P),u.sort(function(M,q){return M.index-q.index})}function E(b){return b?x(function(S){return!S.isClone}):u}function g(b){var S=t.Controller,L=S.toIndex(b),P=S.hasFocus()?1:n.perPage;return x(function(M){return ut(M.index,L,L+P-1)})}function y(b){return x(b)[0]}function p(b,S){re(b,function(L){if(pe(L)&&(L=Tn(L)),An(L)){var P=c[S];P?kt(L,P):Ze(l,L),se(L,n.classes.slide),D(L,z(s,Xe))}}),s(X)}function I(b){Le(x(b).map(function(S){return S.slide})),s(X)}function _(b,S){E(S).forEach(b)}function x(b){return u.filter(Sn(b)?b:function(S){return pe(b)?ze(S.slide,b):Ft(Qe(b),S.index)})}function A(b,S,L){_(function(P){P.style(b,S,L)})}function D(b,S){var L=Vt(b,"img"),P=L.length;P?L.forEach(function(M){i(M,"load error",function(){--P||S()})}):S()}function F(b){return b?c.length:u.length}function O(){return u.length>n.perPage}return{mount:m,destroy:v,update:f,register:d,get:E,getIn:g,getAt:y,add:p,remove:I,forEach:_,filter:x,style:A,getLength:F,isEnough:O}}function Br(e,t,n){var r=U(e),o=r.on,s=r.bind,i=r.emit,a=t.Slides,c=t.Direction.resolve,l=t.Elements,u=l.root,m=l.track,h=l.list,v=a.getAt,f=a.style,d,E,g;function y(){p(),s(window,"resize load",_r(z(i,Xe))),o([ee,X],p),o(Xe,I)}function p(){d=n.direction===yt,ie(u,"maxWidth",we(n.width)),ie(m,c("paddingLeft"),_(!1)),ie(m,c("paddingRight"),_(!0)),I(!0)}function I(H){var N=te(u);(H||E.width!==N.width||E.height!==N.height)&&(ie(m,"height",x()),f(c("marginRight"),we(n.gap)),f("width",D()),f("height",F(),!0),E=N,i(zt),g!==(g=B())&&(fe(u,Xn,g),i(yr,g)))}function _(H){var N=n.padding,T=c(H?"right":"left");return N&&we(N[T]||(We(N)?0:N))||"0px"}function x(){var H="";return d&&(H=A(),Ve(H,"height or heightRatio is missing."),H="calc("+H+" - "+_(!1)+" - "+_(!0)+")"),H}function A(){return we(n.height||te(h).width*n.heightRatio)}function D(){return n.autoWidth?null:we(n.fixedWidth)||(d?"":O())}function F(){return we(n.fixedHeight)||(d?n.autoHeight?null:O():A())}function O(){var H=we(n.gap);return"calc((100%"+(H&&" + "+H)+")/"+(n.perPage||1)+(H&&" - "+H)+")"}function b(){return te(h)[c("width")]}function S(H,N){var T=v(H||0);return T?te(T.slide)[c("width")]+(N?0:M()):0}function L(H,N){var T=v(H);if(T){var R=te(T.slide)[c("right")],V=te(h)[c("left")];return J(R-V)+(N?0:M())}return 0}function P(H){return L(e.length-1)-L(0)+S(0,H)}function M(){var H=v(0);return H&&parseFloat(ie(H.slide,c("marginRight")))||0}function q(H){return parseFloat(ie(m,c("padding"+(H?"Right":"Left"))))||0}function B(){return e.is(rt)||P(!0)>b()}return{mount:y,resize:I,listSize:b,slideSize:S,sliderSize:P,totalSize:L,getPadding:q,isOverflow:B}}var Ur=2;function $r(e,t,n){var r=U(e),o=r.on,s=t.Elements,i=t.Slides,a=t.Direction.resolve,c=[],l;function u(){o(X,m),o([ee,Xe],v),(l=E())&&(f(l),t.Layout.resize(!0))}function m(){h(),u()}function h(){Le(c),he(c),r.destroy()}function v(){var g=E();l!==g&&(l<g||!g)&&r.emit(X)}function f(g){var y=i.get().slice(),p=y.length;if(p){for(;y.length<g;)st(y,y);st(y.slice(-g),y.slice(0,g)).forEach(function(I,_){var x=_<g,A=d(I.slide,_);x?kt(A,y[0].slide):Ze(s.list,A),st(c,A),i.register(A,_-g+(x?0:p),I.index)})}}function d(g,y){var p=g.cloneNode(!0);return se(p,n.classes.clone),p.id=e.root.id+"-clone"+Wt(y+1),p}function E(){var g=n.clones;if(!e.is(Fe))g=0;else if(je(g)){var y=n[a("fixedWidth")]&&t.Layout.slideSize(0),p=y&&$e(te(s.track)[a("width")]/y);g=p||n[a("autoWidth")]&&e.length||n.perPage*Ur}return g}return{mount:u,destroy:h}}function Xr(e,t,n){var r=U(e),o=r.on,s=r.emit,i=e.state.set,a=t.Layout,c=a.slideSize,l=a.getPadding,u=a.totalSize,m=a.listSize,h=a.sliderSize,v=t.Direction,f=v.resolve,d=v.orient,E=t.Elements,g=E.list,y=E.track,p;function I(){p=t.Transition,o([Ce,zt,ee,X],_)}function _(){t.Controller.isBusy()||(t.Scroll.cancel(),A(e.index),t.Slides.update())}function x(T,R,V,K){T!==R&&H(T>V)&&(b(),D(O(P(),T>V),!0)),i(xe),s(ye,R,V,T),p.start(R,function(){i(Ne),s(tt,R,V,T),K&&K()})}function A(T){D(L(T,!0))}function D(T,R){if(!e.is(rt)){var V=R?T:F(T);ie(g,"transform","translate"+f("X")+"("+V+"px)"),T!==V&&s(xn)}}function F(T){if(e.is(Fe)){var R=S(T),V=R>t.Controller.getEnd(),K=R<0;(K||V)&&(T=O(T,V))}return T}function O(T,R){var V=T-B(R),K=h();return T-=d(K*($e(J(V)/K)||1))*(R?1:-1),T}function b(){D(P(),!0),p.cancel()}function S(T){for(var R=t.Slides.get(),V=0,K=1/0,Y=0;Y<R.length;Y++){var ge=R[Y].index,w=J(L(ge,!0)-T);if(w<=K)K=w,V=ge;else break}return V}function L(T,R){var V=d(u(T-1)-q(T));return R?M(V):V}function P(){var T=f("left");return te(g)[T]-te(y)[T]+d(l(!1))}function M(T){return n.trimSpace&&e.is(Pe)&&(T=De(T,0,d(h(!0)-m()))),T}function q(T){var R=n.focus;return R==="center"?(m()-c(T,!0))/2:+R*c(T)||0}function B(T){return L(T?t.Controller.getEnd():0,!!n.trimSpace)}function H(T){var R=d(O(P(),T));return T?R>=0:R<=g[f("scrollWidth")]-te(y)[f("width")]}function N(T,R){R=je(R)?P():R;var V=T!==!0&&d(R)<d(B(!1)),K=T!==!1&&d(R)>d(B(!0));return V||K}return{mount:I,move:x,jump:A,translate:D,shift:O,cancel:b,toIndex:S,toPosition:L,getPosition:P,getLimit:B,exceededLimit:N,reposition:_}}function Yr(e,t,n){var r=U(e),o=r.on,s=r.emit,i=t.Move,a=i.getPosition,c=i.getLimit,l=i.toPosition,u=t.Slides,m=u.isEnough,h=u.getLength,v=n.omitEnd,f=e.is(Fe),d=e.is(Pe),E=z(P,!1),g=z(P,!0),y=n.start||0,p,I=y,_,x,A;function D(){F(),o([ee,X,vt],F),o(zt,O)}function F(){_=h(!0),x=n.perMove,A=n.perPage,p=H();var w=De(y,0,v?p:_-1);w!==y&&(y=w,i.reposition())}function O(){p!==H()&&s(vt)}function b(w,W,Z){if(!ge()){var $=L(w),Q=B($);Q>-1&&(W||Q!==y)&&(V(Q),i.move($,Q,I,Z))}}function S(w,W,Z,$){t.Scroll.scroll(w,W,Z,function(){var Q=B(i.toIndex(a()));V(v?Ee(Q,p):Q),$&&$()})}function L(w){var W=y;if(pe(w)){var Z=w.match(/([+\-<>])(\d+)?/)||[],$=Z[1],Q=Z[2];$==="+"||$==="-"?W=M(y+ +(""+$+(+Q||1)),y):$===">"?W=Q?N(+Q):E(!0):$==="<"&&(W=g(!0))}else W=f?w:De(w,0,p);return W}function P(w,W){var Z=x||(Y()?1:A),$=M(y+Z*(w?-1:1),y,!(x||Y()));return $===-1&&d&&!_n(a(),c(!w),1)?w?0:p:W?$:B($)}function M(w,W,Z){if(m()||Y()){var $=q(w);$!==w&&(W=w,w=$,Z=!1),w<0||w>p?!x&&(ut(0,w,W,!0)||ut(p,W,w,!0))?w=N(T(w)):f?w=Z?w<0?-(_%A||A):_:w:n.rewind?w=w<0?p:0:w=-1:Z&&w!==W&&(w=N(T(W)+(w<W?-1:1)))}else w=-1;return w}function q(w){if(d&&n.trimSpace==="move"&&w!==y)for(var W=a();W===l(w,!0)&&ut(w,0,e.length-1,!n.rewind);)w<y?--w:++w;return w}function B(w){return f?(w+_)%_||0:w}function H(){for(var w=_-(Y()||f&&x?1:A);v&&w-- >0;)if(l(_-1,!0)!==l(w,!0)){w++;break}return De(w,0,_-1)}function N(w){return De(Y()?w:A*w,0,p)}function T(w){return Y()?Ee(w,p):dt((w>=p?_-1:w)/A)}function R(w){var W=i.toIndex(w);return d?De(W,0,p):W}function V(w){w!==y&&(I=y,y=w)}function K(w){return w?I:y}function Y(){return!je(n.focus)||n.isNavigation}function ge(){return e.state.is([xe,Ke])&&!!n.waitForTransition}return{mount:D,go:b,scroll:S,getNext:E,getPrev:g,getAdjacent:P,getEnd:H,setIndex:V,getIndex:K,toIndex:N,toPage:T,toDest:R,hasFocus:Y,isBusy:ge}}var Kr="http://www.w3.org/2000/svg",jr="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z",ot=40;function Qr(e,t,n){var r=U(e),o=r.on,s=r.bind,i=r.emit,a=n.classes,c=n.i18n,l=t.Elements,u=t.Controller,m=l.arrows,h=l.track,v=m,f=l.prev,d=l.next,E,g,y={};function p(){_(),o(ee,I)}function I(){x(),p()}function _(){var S=n.arrows;S&&!(f&&d)&&F(),f&&d&&(Be(y,{prev:f,next:d}),Ue(v,S?"":"none"),se(v,g=Xt+"--"+n.direction),S&&(A(),b(),k([f,d],nt,h.id),i(Sr,f,d)))}function x(){r.destroy(),de(v,g),E?(Le(m?[f,d]:v),f=d=null):ue([f,d],$t)}function A(){o([Ce,tt,X,He,vt],b),s(d,"click",z(D,">")),s(f,"click",z(D,"<"))}function D(S){u.go(S,!0)}function F(){v=m||Re("div",a.arrows),f=O(!0),d=O(!1),E=!0,Ze(v,[f,d]),!m&&kt(v,h)}function O(S){var L='<button class="'+a.arrow+" "+(S?a.prev:a.next)+'" type="button"><svg xmlns="'+Kr+'" viewBox="0 0 '+ot+" "+ot+'" width="'+ot+'" height="'+ot+'" focusable="false"><path d="'+(n.arrowPath||jr)+'" />';return Tn(L)}function b(){if(f&&d){var S=e.index,L=u.getPrev(),P=u.getNext(),M=L>-1&&S<L?c.last:c.prev,q=P>-1&&S>P?c.first:c.next;f.disabled=L<0,d.disabled=P<0,k(f,ne,M),k(d,ne,q),i(Ar,f,d,L,P)}}return{arrows:y,mount:p,destroy:x,update:b}}var Zr=qt+"-interval";function Jr(e,t,n){var r=U(e),o=r.on,s=r.bind,i=r.emit,a=gt(n.interval,e.go.bind(e,">"),A),c=a.isPaused,l=t.Elements,u=t.Elements,m=u.root,h=u.toggle,v=n.autoplay,f,d,E=v==="pause";function g(){v&&(y(),h&&k(h,nt,l.track.id),E||p(),x())}function y(){n.pauseOnHover&&s(m,"mouseenter mouseleave",function(F){f=F.type==="mouseenter",_()}),n.pauseOnFocus&&s(m,"focusin focusout",function(F){d=F.type==="focusin",_()}),h&&s(h,"click",function(){E?p():I(!0)}),o([ye,Gt,X],a.rewind),o(ye,D)}function p(){c()&&t.Slides.isEnough()&&(a.start(!n.resetProgress),d=f=E=!1,x(),i(Rn))}function I(F){F===void 0&&(F=!0),E=!!F,x(),c()||(a.pause(),i(Mn))}function _(){E||(f||d?I(!1):p())}function x(){h&&(fe(h,_e,!E),k(h,ne,n.i18n[E?"play":"pause"]))}function A(F){var O=l.bar;O&&ie(O,"width",F*100+"%"),i(Tr,F)}function D(F){var O=t.Slides.getAt(F);a.set(O&&+oe(O.slide,Zr)||n.interval)}return{mount:g,destroy:a.cancel,play:p,pause:I,isPaused:c}}function ei(e,t,n){var r=U(e),o=r.on;function s(){n.cover&&(o(Nn,z(a,!0)),o([Ce,ee,X],z(i,!0)))}function i(c){t.Slides.forEach(function(l){var u=Je(l.container||l.slide,"img");u&&u.src&&a(c,u,l)})}function a(c,l,u){u.style("background",c?'center/cover no-repeat url("'+l.src+'")':"",!0),Ue(l,c?"none":"")}return{mount:s,destroy:z(i,!1)}}var ti=10,ni=600,ri=.6,ii=1.5,oi=800;function ai(e,t,n){var r=U(e),o=r.on,s=r.emit,i=e.state.set,a=t.Move,c=a.getPosition,l=a.getLimit,u=a.exceededLimit,m=a.translate,h=e.is(Pe),v,f,d=1;function E(){o(ye,I),o([ee,X],_)}function g(A,D,F,O,b){var S=c();if(I(),F&&(!h||!u())){var L=t.Layout.sliderSize(),P=Rt(A)*L*dt(J(A)/L)||0;A=a.toPosition(t.Controller.toDest(A%L))+P}var M=_n(S,A,1);d=1,D=M?0:D||ft(J(A-S)/ii,oi),f=O,v=gt(D,y,z(p,S,A,b),1),i(Ke),s(Gt),v.start()}function y(){i(Ne),f&&f(),s(He)}function p(A,D,F,O){var b=c(),S=A+(D-A)*x(O),L=(S-b)*d;m(b+L),h&&!F&&u()&&(d*=ri,J(L)<ti&&g(l(u(!0)),ni,!1,f,!0))}function I(){v&&v.cancel()}function _(){v&&!v.isPaused()&&(I(),y())}function x(A){var D=n.easingFunc;return D?D(A):1-Math.pow(1-A,4)}return{mount:E,destroy:I,scroll:g,cancel:_}}var Oe={passive:!1,capture:!0};function si(e,t,n){var r=U(e),o=r.on,s=r.emit,i=r.bind,a=r.unbind,c=e.state,l=t.Move,u=t.Scroll,m=t.Controller,h=t.Elements.track,v=t.Media.reduce,f=t.Direction,d=f.resolve,E=f.orient,g=l.getPosition,y=l.exceededLimit,p,I,_,x,A,D=!1,F,O,b;function S(){i(h,Ct,Ot,Oe),i(h,Dt,Ot,Oe),i(h,Yn,P,Oe),i(h,"click",B,{capture:!0}),i(h,"dragstart",le),o([Ce,ee],L)}function L(){var C=n.drag;jt(!C),x=C==="free"}function P(C){if(F=!1,!O){var G=Q(C);$(C.target)&&(G||!C.button)&&(m.isBusy()?le(C,!0):(b=G?h:window,A=c.is([xe,Ke]),_=null,i(b,Ct,M,Oe),i(b,Dt,q,Oe),l.cancel(),u.cancel(),H(C)))}}function M(C){if(c.is(at)||(c.set(at),s(mr)),C.cancelable)if(A){l.translate(p+Z(Y(C)));var G=ge(C)>pn,be=D!==(D=y());(G||be)&&H(C),F=!0,s(pr),le(C)}else R(C)&&(A=T(C),le(C))}function q(C){c.is(at)&&(c.set(Ne),s(Er)),A&&(N(C),le(C)),a(b,Ct,M),a(b,Dt,q),A=!1}function B(C){!O&&F&&le(C,!0)}function H(C){_=I,I=C,p=g()}function N(C){var G=V(C),be=K(G),ke=n.rewind&&n.rewindByDrag;v(!1),x?m.scroll(be,0,n.snap):e.is(rt)?m.go(E(Rt(G))<0?ke?"<":"-":ke?">":"+"):e.is(Pe)&&D&&ke?m.go(y(!0)?">":"<"):m.go(m.toDest(be),!0),v(!0)}function T(C){var G=n.dragMinThreshold,be=We(G),ke=be&&G.mouse||0,nr=(be?G.touch:+G)||10;return J(Y(C))>(Q(C)?nr:ke)}function R(C){return J(Y(C))>J(Y(C,!0))}function V(C){if(e.is(Fe)||!D){var G=ge(C);if(G&&G<pn)return Y(C)/G}return 0}function K(C){return g()+Rt(C)*Ee(J(C)*(n.flickPower||600),x?1/0:t.Layout.listSize()*(n.flickMaxPages||1))}function Y(C,G){return W(C,G)-W(w(C),G)}function ge(C){return It(C)-It(w(C))}function w(C){return I===C&&_||I}function W(C,G){return(Q(C)?C.changedTouches[0]:C)["page"+d(G?"Y":"X")]}function Z(C){return C/(D&&e.is(Pe)?qr:1)}function $(C){var G=n.noDrag;return!ze(C,"."+Gn+", ."+At)&&(!G||!ze(C,G))}function Q(C){return typeof TouchEvent<"u"&&C instanceof TouchEvent}function tr(){return A}function jt(C){O=C}return{mount:S,disable:jt,isDragging:tr}}var ui={Spacebar:" ",Right:Et,Left:pt,Up:Hn,Down:Fn};function Kt(e){return e=pe(e)?e:e.key,ui[e]||e}var En="keydown";function ci(e,t,n){var r=U(e),o=r.on,s=r.bind,i=r.unbind,a=e.root,c=t.Direction.resolve,l,u;function m(){h(),o(ee,v),o(ee,h),o(ye,d)}function h(){var g=n.keyboard;g&&(l=g==="global"?window:a,s(l,En,E))}function v(){i(l,En)}function f(g){u=g}function d(){var g=u;u=!0,yn(function(){u=g})}function E(g){if(!u){var y=Kt(g);y===c(pt)?e.go("<"):y===c(Et)&&e.go(">")}}return{mount:m,destroy:v,disable:f}}var qe=qt+"-lazy",ct=qe+"-srcset",li="["+qe+"], ["+ct+"]";function fi(e,t,n){var r=U(e),o=r.on,s=r.off,i=r.bind,a=r.emit,c=n.lazyLoad==="sequential",l=[tt,He],u=[];function m(){n.lazyLoad&&(h(),o(X,h))}function h(){he(u),v(),c?g():(s(l),o(l,f),f())}function v(){t.Slides.forEach(function(y){Vt(y.slide,li).forEach(function(p){var I=oe(p,qe),_=oe(p,ct);if(I!==p.src||_!==p.srcset){var x=n.classes.spinner,A=p.parentElement,D=Je(A,"."+x)||Re("span",x,A);u.push([p,y,D]),p.src||Ue(p,"none")}})})}function f(){u=u.filter(function(y){var p=n.perPage*((n.preloadPages||1)+1)-1;return y[1].isWithin(e.index,p)?d(y):!0}),u.length||s(l)}function d(y){var p=y[0];se(y[1].slide,Pt),i(p,"load error",z(E,y)),k(p,"src",oe(p,qe)),k(p,"srcset",oe(p,ct)),ue(p,qe),ue(p,ct)}function E(y,p){var I=y[0],_=y[1];de(_.slide,Pt),p.type!=="error"&&(Le(y[2]),Ue(I,""),a(Nn,I,_),a(Xe)),c&&g()}function g(){u.length&&d(u.shift())}return{mount:m,destroy:z(he,u),check:f}}function di(e,t,n){var r=U(e),o=r.on,s=r.emit,i=r.bind,a=t.Slides,c=t.Elements,l=t.Controller,u=l.hasFocus,m=l.getIndex,h=l.go,v=t.Direction.resolve,f=c.pagination,d=[],E,g;function y(){p(),o([ee,X,vt],y);var O=n.pagination;f&&Ue(f,O?"":"none"),O&&(o([ye,Gt,He],F),I(),F(),s(br,{list:E,items:d},D(e.index)))}function p(){E&&(Le(f?Se(E.children):E),de(E,g),he(d),E=null),r.destroy()}function I(){var O=e.length,b=n.classes,S=n.i18n,L=n.perPage,P=u()?l.getEnd()+1:$e(O/L);E=f||Re("ul",b.pagination,c.track.parentElement),se(E,g=bt+"--"+A()),k(E,ve,"tablist"),k(E,ne,S.select),k(E,Ut,A()===yt?"vertical":"");for(var M=0;M<P;M++){var q=Re("li",null,E),B=Re("button",{class:b.page,type:"button"},q),H=a.getIn(M).map(function(T){return T.slide.id}),N=!u()&&L>1?S.pageX:S.slideX;i(B,"click",z(_,M)),n.paginationKeyboard&&i(B,"keydown",z(x,M)),k(q,ve,"presentation"),k(B,ve,"tab"),k(B,nt,H.join(" ")),k(B,ne,Mt(N,M+1)),k(B,Me,-1),d.push({li:q,button:B,page:M})}}function _(O){h(">"+O,!0)}function x(O,b){var S=d.length,L=Kt(b),P=A(),M=-1;L===v(Et,!1,P)?M=++O%S:L===v(pt,!1,P)?M=(--O+S)%S:L==="Home"?M=0:L==="End"&&(M=S-1);var q=d[M];q&&(wn(q.button),h(">"+M),le(b,!0))}function A(){return n.paginationDirection||n.direction}function D(O){return d[l.toPage(O)]}function F(){var O=D(m(!0)),b=D(m());if(O){var S=O.button;de(S,_e),ue(S,dn),k(S,Me,-1)}if(b){var L=b.button;se(L,_e),k(L,dn,!0),k(L,Me,"")}s(wr,{list:E,items:d},O,b)}return{items:d,mount:y,destroy:p,getAt:D,update:F}}var vi=[" ","Enter"];function hi(e,t,n){var r=n.isNavigation,o=n.slideFocus,s=[];function i(){e.splides.forEach(function(f){f.isParent||(l(e,f.splide),l(f.splide,e))}),r&&u()}function a(){s.forEach(function(f){f.destroy()}),he(s)}function c(){a(),i()}function l(f,d){var E=U(f);E.on(ye,function(g,y,p){d.go(d.is(Fe)?p:g)}),s.push(E)}function u(){var f=U(e),d=f.on;d(Dn,h),d(Pn,v),d([Ce,ee],m),s.push(f),f.emit(In,e.splides)}function m(){k(t.Elements.list,Ut,n.direction===yt?"vertical":"")}function h(f){e.go(f.index)}function v(f,d){Ft(vi,Kt(d))&&(h(f),le(d))}return{setup:z(t.Media.set,{slideFocus:je(o)?r:o},!0),mount:i,destroy:a,remount:c}}function gi(e,t,n){var r=U(e),o=r.bind,s=0;function i(){n.wheel&&o(t.Elements.track,"wheel",a,Oe)}function a(l){if(l.cancelable){var u=l.deltaY,m=u<0,h=It(l),v=n.wheelMinThreshold||0,f=n.wheelSleep||0;J(u)>v&&h-s>f&&(e.go(m?"<":">"),s=h),c(m)&&le(l)}}function c(l){return!n.releaseWheel||e.state.is(xe)||t.Controller.getAdjacent(l)!==-1}return{mount:i}}var mi=90;function pi(e,t,n){var r=U(e),o=r.on,s=t.Elements.track,i=n.live&&!n.isNavigation,a=Re("span",xr),c=gt(mi,z(u,!1));function l(){i&&(h(!t.Autoplay.isPaused()),k(s,gn,!0),a.textContent="\u2026",o(Rn,z(h,!0)),o(Mn,z(h,!1)),o([tt,He],z(u,!0)))}function u(v){k(s,hn,v),v?(Ze(s,a),c.start()):(Le(a),c.cancel())}function m(){ue(s,[vn,gn,hn]),Le(a)}function h(v){i&&k(s,vn,v?"off":"polite")}return{mount:l,disable:h,destroy:m}}var Ei=Object.freeze({__proto__:null,Media:Cr,Direction:Dr,Elements:Wr,Slides:Gr,Layout:Br,Clones:$r,Move:Xr,Controller:Yr,Arrows:Qr,Autoplay:Jr,Cover:ei,Scroll:ai,Drag:si,Keyboard:ci,LazyLoad:fi,Pagination:di,Sync:hi,Wheel:gi,Live:pi}),yi={prev:"Previous slide",next:"Next slide",first:"Go to first slide",last:"Go to last slide",slideX:"Go to slide %s",pageX:"Go to page %s",play:"Start autoplay",pause:"Pause autoplay",carousel:"carousel",slide:"slide",select:"Select a slide to show",slideLabel:"%s of %s"},Si={type:"slide",role:"region",speed:400,perPage:1,cloneStatus:!0,arrows:!0,pagination:!0,paginationKeyboard:!0,interval:5e3,pauseOnHover:!0,pauseOnFocus:!0,resetProgress:!0,easing:"cubic-bezier(0.25, 1, 0.5, 1)",drag:!0,direction:"ltr",trimSpace:!0,focusableNodes:"a, button, textarea, input, select, iframe",live:!0,classes:kr,i18n:yi,reducedMotion:{speed:0,rewindSpeed:0,autoplay:"pause"}};function Ai(e,t,n){var r=t.Slides;function o(){U(e).on([Ce,X],s)}function s(){r.forEach(function(a){a.style("transform","translateX(-"+100*a.index+"%)")})}function i(a,c){r.style("transition","opacity "+n.speed+"ms "+n.easing),yn(c)}return{mount:o,start:i,cancel:Ot}}function bi(e,t,n){var r=t.Move,o=t.Controller,s=t.Scroll,i=t.Elements.list,a=z(ie,i,"transition"),c;function l(){U(e).bind(i,"transitionend",function(v){v.target===i&&c&&(m(),c())})}function u(v,f){var d=r.toPosition(v,!0),E=r.getPosition(),g=h(v);J(d-E)>=1&&g>=1?n.useScroll?s.scroll(d,g,!1,f):(a("transform "+g+"ms "+n.easing),r.translate(d,!0),c=f):(r.jump(v),f())}function m(){a(""),s.cancel()}function h(v){var f=n.rewindSpeed;if(e.is(Pe)&&f){var d=o.getIndex(!0),E=o.getEnd();if(d===0&&v>=E||d>=E&&v===0)return f}return n.speed}return{mount:l,start:u,cancel:m}}var wi=function(){function e(n,r){this.event=U(),this.Components={},this.state=Lr(Ie),this.splides=[],this._o={},this._E={};var o=pe(n)?Ln(document,n):n;Ve(o,o+" is invalid."),this.root=o,r=me({label:oe(o,ne)||"",labelledby:oe(o,Bt)||""},Si,e.defaults,r||{});try{me(r,JSON.parse(oe(o,qt)))}catch{Ve(!1,"Invalid JSON")}this._o=Object.create(me({},r))}var t=e.prototype;return t.mount=function(r,o){var s=this,i=this.state,a=this.Components;Ve(i.is([Ie,lt]),"Already mounted!"),i.set(Ie),this._C=a,this._T=o||this._T||(this.is(rt)?Ai:bi),this._E=r||this._E;var c=Be({},Ei,this._E,{Transition:this._T});return Te(c,function(l,u){var m=l(s,a,s._o);a[u]=m,m.setup&&m.setup()}),Te(a,function(l){l.mount&&l.mount()}),this.emit(Ce),se(this.root,Hr),i.set(Ne),this.emit(ln),this},t.sync=function(r){return this.splides.push({splide:r}),r.splides.push({splide:this,isParent:!0}),this.state.is(Ne)&&(this._C.Sync.remount(),r.Components.Sync.remount()),this},t.go=function(r){return this._C.Controller.go(r),this},t.on=function(r,o){return this.event.on(r,o),this},t.off=function(r){return this.event.off(r),this},t.emit=function(r){var o;return(o=this.event).emit.apply(o,[r].concat(Se(arguments,1))),this},t.add=function(r,o){return this._C.Slides.add(r,o),this},t.remove=function(r){return this._C.Slides.remove(r),this},t.is=function(r){return this._o.type===r},t.refresh=function(){return this.emit(X),this},t.destroy=function(r){r===void 0&&(r=!0);var o=this.event,s=this.state;return s.is(Ie)?U(this).on(ln,this.destroy.bind(this,r)):(Te(this._C,function(i){i.destroy&&i.destroy(r)},!0),o.emit(On),o.destroy(),r&&he(this.splides),s.set(lt)),this},ur(e,[{key:"options",get:function(){return this._o},set:function(r){this._C.Media.set(r,!0,!0)}},{key:"length",get:function(){return this._C.Slides.getLength(!0)}},{key:"index",get:function(){return this._C.Controller.getIndex()}}]),e}(),wt=wi;wt.defaults={};wt.STATES=lr;function Kn(e){return e<.5?2*e*e:1-Math.pow(-2*e+2,2)/2}function it(e){let t=getComputedStyle(e).transform;if(!t||t==="none")return 0;let n=t.match(/matrix\(([-0-9.,\s]+)\)/);if(n&&n[1])return n[1].split(",").map(Number)[4]||0;let r=t.match(/matrix3d\(([-0-9.,\s]+)\)/);return r&&r[1]&&r[1].split(",").map(Number)[12]||0}function jn(e,t,n){let r=e.Components.Elements.list,o=!1,s=0,i=0,a=0,c=0,l=n.baseSpeedPxPerSec??40,u=n.slowFactor??.25,m=l,h=n.tweenMs??250;function v(p,I){let _=m,x=p,A=performance.now();function D(F){let O=Math.min(1,(F-A)/I);m=_+(x-_)*Kn(O),O<1&&requestAnimationFrame(D)}I>0?requestAnimationFrame(D):m=p}function f(p){if(!o)return;i||(i=p);let I=(p-i)/1e3;i=p,c+=m*I;let x=a-c;r.style.transform=`translate3d(${x}px,0,0)`,Math.abs(c)>2e4&&(a=it(r),c=0),s=requestAnimationFrame(f)}function d(){o||(o=!0,i=0,a=it(r),r.style.willChange="transform",r.style.transform=`translate3d(${a-.01}px,0,0)`,s=requestAnimationFrame(f))}function E(){o=!1,s&&cancelAnimationFrame(s),s=0}t.addEventListener("mouseenter",()=>v(l*u,h)),t.addEventListener("mouseleave",()=>v(l,h)),t.addEventListener("focusin",()=>v(l*u,h)),t.addEventListener("focusout",()=>v(l,h)),e.on("drag",E),e.on("move",E),e.on("moved",()=>{a=it(r),c=0,g()}),e.on("resized",()=>{a=it(r),c=0});function g(){document.visibilityState==="visible"&&!o&&d()}return document.addEventListener("visibilitychange",()=>{document.visibilityState==="visible"?g():E()}),new IntersectionObserver(p=>{p.forEach(I=>{I.isIntersecting?g():E()})},{root:null,threshold:.1}).observe(t),{start:d,stop:E,setTargetSpeed:v,setBaseSpeedPxPerSec:p=>{l=p,v(p,0)}}}function Qn(e,t,n){let r=n.factor??.33,o=n.rampMs??250,s=jn(t,e,{baseSpeedPxPerSec:n.baseSpeedPxPerSec??70,slowFactor:r,tweenMs:o}),i=()=>{requestAnimationFrame(()=>requestAnimationFrame(s.start))};t.on("ready",i),t.on("mounted",i),t.on("resized",()=>{requestAnimationFrame(()=>requestAnimationFrame(s.start))}),document.visibilityState==="visible"&&requestAnimationFrame(()=>requestAnimationFrame(s.start));let a=e.getAttribute("id")||"";return window.splideAuto=window.splideAuto||{},window.splideAuto[a]=s,{mode:"custom",controller:s}}function Zn(e,t){let r=Date.now();e.addEventListener("wheel",function(o){if(o.ctrlKey)return;let{deltaX:s}=o,{deltaY:i}=o;if(o.shiftKey&&Math.abs(s)===0){o.preventDefault(),i>0?t.go("+1"):i<0&&t.go("-1");return}if(!o.shiftKey&&Math.abs(s)!==0){if(Math.abs(s)<=Math.abs(i))return;let a=e.scrollWidth-e.offsetWidth;(e.scrollLeft+s<0||e.scrollLeft+s>a)&&o.preventDefault();let c=Date.now(),l=c-r;(l>1e3||l>=150&&Math.abs(s)>5)&&(s>0?t.go("+1"):s<0&&t.go("-1"),r=c)}},!1)}function Jn(e,t,n){let r=document.querySelectorAll(e);r.length&&r.forEach((o,s)=>{let i=`${e.replace(".","")}-${s}`;o.setAttribute("id",i);let a=new wt(o,{...t});a.on("mounted",()=>{if(a.Components.Elements.slides.forEach((u,m)=>{u.addEventListener("click",()=>{a.go(m)})}),Zn(o,a),n){let u=o.getAttribute("data-auto-speed"),m=u?parseFloat(u):void 0;Qn(o,a,{factor:.33,rampMs:250,baseSpeedPxPerSec:m})}});let c=document.querySelector(".review-progress-bar");if(c&&e===".review-slider"){let u=()=>{let m=a.Components.Controller.getEnd()+1,h=Math.min((a.index+1)/m,1);c.style.width=String(100*h)+"%"};a.on("move",u),a.on("mounted",u),a.on("ready",u)}let l=window.splide&&window.splide.Extensions?window.splide.Extensions:void 0;n&&l?a.mount(l):a.mount()})}function er(){[{selector:".review-slider",options:{type:"loop",autoWidth:!0,perMove:1,gap:"0",arrows:!1,pagination:!1,drag:!0,focus:"left",snap:!0,autoScroll:{speed:.5,pauseOnHover:!1,pauseOnFocus:!1}},useAutoScroll:!0},{selector:".article-slider",options:{type:"slide",autoWidth:!0,perMove:1,gap:"0",arrows:!1,pagination:!1,drag:!0,focus:"left",snap:!0},useAutoScroll:!1},{selector:".about-cards",options:{type:"slide",autoWidth:!0,perMove:1,gap:"0",arrows:!1,pagination:!1,drag:!0,focus:"left",snap:!0},useAutoScroll:!1},{selector:".service-cards",options:{type:"slide",autoWidth:!0,perMove:1,gap:"0",arrows:!1,pagination:!1,drag:!0,focus:"left",snap:!0},useAutoScroll:!1}].forEach(t=>Jn(t.selector,t.options,t.useAutoScroll))}function Ti(e){let t=window.Webflow;t&&typeof t.push=="function"?t.push(e):window.addEventListener("load",()=>setTimeout(e,100))}Ti(()=>{setTimeout(()=>{er(),tn(),nn()},100)});Object.assign(window,{boot:er});})();
+  }
+  function toArray(value) {
+    return isArray(value) ? value : [value];
+  }
+  function forEach(values, iteratee) {
+    toArray(values).forEach(iteratee);
+  }
+  function includes(array, value) {
+    return array.indexOf(value) > -1;
+  }
+  function push(array, items) {
+    array.push.apply(array, toArray(items));
+    return array;
+  }
+  function toggleClass(elm, classes, add) {
+    if (elm) {
+      forEach(classes, function(name) {
+        if (name) {
+          elm.classList[add ? "add" : "remove"](name);
+        }
+      });
+    }
+  }
+  function addClass(elm, classes) {
+    toggleClass(elm, isString(classes) ? classes.split(" ") : classes, true);
+  }
+  function append(parent, children2) {
+    forEach(children2, parent.appendChild.bind(parent));
+  }
+  function before(nodes, ref) {
+    forEach(nodes, function(node) {
+      var parent = (ref || node).parentNode;
+      if (parent) {
+        parent.insertBefore(node, ref);
+      }
+    });
+  }
+  function matches(elm, selector) {
+    return isHTMLElement(elm) && (elm["msMatchesSelector"] || elm.matches).call(elm, selector);
+  }
+  function children(parent, selector) {
+    var children2 = parent ? slice(parent.children) : [];
+    return selector ? children2.filter(function(child2) {
+      return matches(child2, selector);
+    }) : children2;
+  }
+  function child(parent, selector) {
+    return selector ? children(parent, selector)[0] : parent.firstElementChild;
+  }
+  var ownKeys = Object.keys;
+  function forOwn(object, iteratee, right) {
+    if (object) {
+      (right ? ownKeys(object).reverse() : ownKeys(object)).forEach(function(key) {
+        key !== "__proto__" && iteratee(object[key], key);
+      });
+    }
+    return object;
+  }
+  function assign(object) {
+    slice(arguments, 1).forEach(function(source) {
+      forOwn(source, function(value, key) {
+        object[key] = source[key];
+      });
+    });
+    return object;
+  }
+  function merge(object) {
+    slice(arguments, 1).forEach(function(source) {
+      forOwn(source, function(value, key) {
+        if (isArray(value)) {
+          object[key] = value.slice();
+        } else if (isObject(value)) {
+          object[key] = merge({}, isObject(object[key]) ? object[key] : {}, value);
+        } else {
+          object[key] = value;
+        }
+      });
+    });
+    return object;
+  }
+  function omit(object, keys) {
+    forEach(keys || ownKeys(object), function(key) {
+      delete object[key];
+    });
+  }
+  function removeAttribute(elms, attrs) {
+    forEach(elms, function(elm) {
+      forEach(attrs, function(attr) {
+        elm && elm.removeAttribute(attr);
+      });
+    });
+  }
+  function setAttribute(elms, attrs, value) {
+    if (isObject(attrs)) {
+      forOwn(attrs, function(value2, name) {
+        setAttribute(elms, name, value2);
+      });
+    } else {
+      forEach(elms, function(elm) {
+        isNull(value) || value === "" ? removeAttribute(elm, attrs) : elm.setAttribute(attrs, String(value));
+      });
+    }
+  }
+  function create(tag, attrs, parent) {
+    var elm = document.createElement(tag);
+    if (attrs) {
+      isString(attrs) ? addClass(elm, attrs) : setAttribute(elm, attrs);
+    }
+    parent && append(parent, elm);
+    return elm;
+  }
+  function style(elm, prop, value) {
+    if (isUndefined(value)) {
+      return getComputedStyle(elm)[prop];
+    }
+    if (!isNull(value)) {
+      elm.style[prop] = "" + value;
+    }
+  }
+  function display(elm, display2) {
+    style(elm, "display", display2);
+  }
+  function focus(elm) {
+    elm["setActive"] && elm["setActive"]() || elm.focus({
+      preventScroll: true
+    });
+  }
+  function getAttribute(elm, attr) {
+    return elm.getAttribute(attr);
+  }
+  function hasClass(elm, className) {
+    return elm && elm.classList.contains(className);
+  }
+  function rect(target) {
+    return target.getBoundingClientRect();
+  }
+  function remove(nodes) {
+    forEach(nodes, function(node) {
+      if (node && node.parentNode) {
+        node.parentNode.removeChild(node);
+      }
+    });
+  }
+  function parseHtml(html) {
+    return child(new DOMParser().parseFromString(html, "text/html").body);
+  }
+  function prevent(e, stopPropagation) {
+    e.preventDefault();
+    if (stopPropagation) {
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+    }
+  }
+  function query(parent, selector) {
+    return parent && parent.querySelector(selector);
+  }
+  function queryAll(parent, selector) {
+    return selector ? slice(parent.querySelectorAll(selector)) : [];
+  }
+  function removeClass(elm, classes) {
+    toggleClass(elm, classes, false);
+  }
+  function timeOf(e) {
+    return e.timeStamp;
+  }
+  function unit(value) {
+    return isString(value) ? value : value ? value + "px" : "";
+  }
+  var PROJECT_CODE = "splide";
+  var DATA_ATTRIBUTE = "data-" + PROJECT_CODE;
+  function assert(condition, message) {
+    if (!condition) {
+      throw new Error("[" + PROJECT_CODE + "] " + (message || ""));
+    }
+  }
+  var min = Math.min;
+  var max = Math.max;
+  var floor = Math.floor;
+  var ceil = Math.ceil;
+  var abs = Math.abs;
+  function approximatelyEqual(x, y, epsilon) {
+    return abs(x - y) < epsilon;
+  }
+  function between(number, x, y, exclusive) {
+    var minimum = min(x, y);
+    var maximum = max(x, y);
+    return exclusive ? minimum < number && number < maximum : minimum <= number && number <= maximum;
+  }
+  function clamp(number, x, y) {
+    var minimum = min(x, y);
+    var maximum = max(x, y);
+    return min(max(minimum, number), maximum);
+  }
+  function sign(x) {
+    return +(x > 0) - +(x < 0);
+  }
+  function format(string, replacements) {
+    forEach(replacements, function(replacement) {
+      string = string.replace("%s", "" + replacement);
+    });
+    return string;
+  }
+  function pad(number) {
+    return number < 10 ? "0" + number : "" + number;
+  }
+  var ids = {};
+  function uniqueId(prefix) {
+    return "" + prefix + pad(ids[prefix] = (ids[prefix] || 0) + 1);
+  }
+  function EventBinder() {
+    var listeners = [];
+    function bind(targets, events, callback, options) {
+      forEachEvent(targets, events, function(target, event, namespace) {
+        var isEventTarget = "addEventListener" in target;
+        var remover = isEventTarget ? target.removeEventListener.bind(target, event, callback, options) : target["removeListener"].bind(target, callback);
+        isEventTarget ? target.addEventListener(event, callback, options) : target["addListener"](callback);
+        listeners.push([target, event, namespace, callback, remover]);
+      });
+    }
+    function unbind(targets, events, callback) {
+      forEachEvent(targets, events, function(target, event, namespace) {
+        listeners = listeners.filter(function(listener) {
+          if (listener[0] === target && listener[1] === event && listener[2] === namespace && (!callback || listener[3] === callback)) {
+            listener[4]();
+            return false;
+          }
+          return true;
+        });
+      });
+    }
+    function dispatch(target, type, detail) {
+      var e;
+      var bubbles = true;
+      if (typeof CustomEvent === "function") {
+        e = new CustomEvent(type, {
+          bubbles,
+          detail
+        });
+      } else {
+        e = document.createEvent("CustomEvent");
+        e.initCustomEvent(type, bubbles, false, detail);
+      }
+      target.dispatchEvent(e);
+      return e;
+    }
+    function forEachEvent(targets, events, iteratee) {
+      forEach(targets, function(target) {
+        target && forEach(events, function(events2) {
+          events2.split(" ").forEach(function(eventNS) {
+            var fragment = eventNS.split(".");
+            iteratee(target, fragment[0], fragment[1]);
+          });
+        });
+      });
+    }
+    function destroy() {
+      listeners.forEach(function(data) {
+        data[4]();
+      });
+      empty(listeners);
+    }
+    return {
+      bind,
+      unbind,
+      dispatch,
+      destroy
+    };
+  }
+  var EVENT_MOUNTED = "mounted";
+  var EVENT_READY = "ready";
+  var EVENT_MOVE = "move";
+  var EVENT_MOVED = "moved";
+  var EVENT_CLICK = "click";
+  var EVENT_ACTIVE = "active";
+  var EVENT_INACTIVE = "inactive";
+  var EVENT_VISIBLE = "visible";
+  var EVENT_HIDDEN = "hidden";
+  var EVENT_REFRESH = "refresh";
+  var EVENT_UPDATED = "updated";
+  var EVENT_RESIZE = "resize";
+  var EVENT_RESIZED = "resized";
+  var EVENT_DRAG = "drag";
+  var EVENT_DRAGGING = "dragging";
+  var EVENT_DRAGGED = "dragged";
+  var EVENT_SCROLL = "scroll";
+  var EVENT_SCROLLED = "scrolled";
+  var EVENT_OVERFLOW = "overflow";
+  var EVENT_DESTROY = "destroy";
+  var EVENT_ARROWS_MOUNTED = "arrows:mounted";
+  var EVENT_ARROWS_UPDATED = "arrows:updated";
+  var EVENT_PAGINATION_MOUNTED = "pagination:mounted";
+  var EVENT_PAGINATION_UPDATED = "pagination:updated";
+  var EVENT_NAVIGATION_MOUNTED = "navigation:mounted";
+  var EVENT_AUTOPLAY_PLAY = "autoplay:play";
+  var EVENT_AUTOPLAY_PLAYING = "autoplay:playing";
+  var EVENT_AUTOPLAY_PAUSE = "autoplay:pause";
+  var EVENT_LAZYLOAD_LOADED = "lazyload:loaded";
+  var EVENT_SLIDE_KEYDOWN = "sk";
+  var EVENT_SHIFTED = "sh";
+  var EVENT_END_INDEX_CHANGED = "ei";
+  function EventInterface(Splide2) {
+    var bus = Splide2 ? Splide2.event.bus : document.createDocumentFragment();
+    var binder = EventBinder();
+    function on(events, callback) {
+      binder.bind(bus, toArray(events).join(" "), function(e) {
+        callback.apply(callback, isArray(e.detail) ? e.detail : []);
+      });
+    }
+    function emit(event) {
+      binder.dispatch(bus, event, slice(arguments, 1));
+    }
+    if (Splide2) {
+      Splide2.event.on(EVENT_DESTROY, binder.destroy);
+    }
+    return assign(binder, {
+      bus,
+      on,
+      off: apply(binder.unbind, bus),
+      emit
+    });
+  }
+  function RequestInterval(interval, onInterval, onUpdate, limit) {
+    var now = Date.now;
+    var startTime;
+    var rate = 0;
+    var id;
+    var paused = true;
+    var count = 0;
+    function update() {
+      if (!paused) {
+        rate = interval ? min((now() - startTime) / interval, 1) : 1;
+        onUpdate && onUpdate(rate);
+        if (rate >= 1) {
+          onInterval();
+          startTime = now();
+          if (limit && ++count >= limit) {
+            return pause();
+          }
+        }
+        id = raf(update);
+      }
+    }
+    function start(resume) {
+      resume || cancel();
+      startTime = now() - (resume ? rate * interval : 0);
+      paused = false;
+      id = raf(update);
+    }
+    function pause() {
+      paused = true;
+    }
+    function rewind() {
+      startTime = now();
+      rate = 0;
+      if (onUpdate) {
+        onUpdate(rate);
+      }
+    }
+    function cancel() {
+      id && cancelAnimationFrame(id);
+      rate = 0;
+      id = 0;
+      paused = true;
+    }
+    function set(time) {
+      interval = time;
+    }
+    function isPaused() {
+      return paused;
+    }
+    return {
+      start,
+      rewind,
+      pause,
+      cancel,
+      set,
+      isPaused
+    };
+  }
+  function State(initialState) {
+    var state = initialState;
+    function set(value) {
+      state = value;
+    }
+    function is(states) {
+      return includes(toArray(states), state);
+    }
+    return {
+      set,
+      is
+    };
+  }
+  function Throttle(func, duration) {
+    var interval = RequestInterval(duration || 0, func, null, 1);
+    return function() {
+      interval.isPaused() && interval.start();
+    };
+  }
+  function Media(Splide2, Components2, options) {
+    var state = Splide2.state;
+    var breakpoints = options.breakpoints || {};
+    var reducedMotion = options.reducedMotion || {};
+    var binder = EventBinder();
+    var queries = [];
+    function setup() {
+      var isMin = options.mediaQuery === "min";
+      ownKeys(breakpoints).sort(function(n, m) {
+        return isMin ? +n - +m : +m - +n;
+      }).forEach(function(key) {
+        register(breakpoints[key], "(" + (isMin ? "min" : "max") + "-width:" + key + "px)");
+      });
+      register(reducedMotion, MEDIA_PREFERS_REDUCED_MOTION);
+      update();
+    }
+    function destroy(completely) {
+      if (completely) {
+        binder.destroy();
+      }
+    }
+    function register(options2, query2) {
+      var queryList = matchMedia(query2);
+      binder.bind(queryList, "change", update);
+      queries.push([options2, queryList]);
+    }
+    function update() {
+      var destroyed = state.is(DESTROYED);
+      var direction = options.direction;
+      var merged = queries.reduce(function(merged2, entry) {
+        return merge(merged2, entry[1].matches ? entry[0] : {});
+      }, {});
+      omit(options);
+      set(merged);
+      if (options.destroy) {
+        Splide2.destroy(options.destroy === "completely");
+      } else if (destroyed) {
+        destroy(true);
+        Splide2.mount();
+      } else {
+        direction !== options.direction && Splide2.refresh();
+      }
+    }
+    function reduce(enable) {
+      if (matchMedia(MEDIA_PREFERS_REDUCED_MOTION).matches) {
+        enable ? merge(options, reducedMotion) : omit(options, ownKeys(reducedMotion));
+      }
+    }
+    function set(opts, base, notify) {
+      merge(options, opts);
+      base && merge(Object.getPrototypeOf(options), opts);
+      if (notify || !state.is(CREATED)) {
+        Splide2.emit(EVENT_UPDATED, options);
+      }
+    }
+    return {
+      setup,
+      destroy,
+      reduce,
+      set
+    };
+  }
+  var ARROW = "Arrow";
+  var ARROW_LEFT = ARROW + "Left";
+  var ARROW_RIGHT = ARROW + "Right";
+  var ARROW_UP = ARROW + "Up";
+  var ARROW_DOWN = ARROW + "Down";
+  var RTL = "rtl";
+  var TTB = "ttb";
+  var ORIENTATION_MAP = {
+    width: ["height"],
+    left: ["top", "right"],
+    right: ["bottom", "left"],
+    x: ["y"],
+    X: ["Y"],
+    Y: ["X"],
+    ArrowLeft: [ARROW_UP, ARROW_RIGHT],
+    ArrowRight: [ARROW_DOWN, ARROW_LEFT]
+  };
+  function Direction(Splide2, Components2, options) {
+    function resolve(prop, axisOnly, direction) {
+      direction = direction || options.direction;
+      var index = direction === RTL && !axisOnly ? 1 : direction === TTB ? 0 : -1;
+      return ORIENTATION_MAP[prop] && ORIENTATION_MAP[prop][index] || prop.replace(/width|left|right/i, function(match, offset) {
+        var replacement = ORIENTATION_MAP[match.toLowerCase()][index] || match;
+        return offset > 0 ? replacement.charAt(0).toUpperCase() + replacement.slice(1) : replacement;
+      });
+    }
+    function orient(value) {
+      return value * (options.direction === RTL ? 1 : -1);
+    }
+    return {
+      resolve,
+      orient
+    };
+  }
+  var ROLE = "role";
+  var TAB_INDEX = "tabindex";
+  var DISABLED = "disabled";
+  var ARIA_PREFIX = "aria-";
+  var ARIA_CONTROLS = ARIA_PREFIX + "controls";
+  var ARIA_CURRENT = ARIA_PREFIX + "current";
+  var ARIA_SELECTED = ARIA_PREFIX + "selected";
+  var ARIA_LABEL = ARIA_PREFIX + "label";
+  var ARIA_LABELLEDBY = ARIA_PREFIX + "labelledby";
+  var ARIA_HIDDEN = ARIA_PREFIX + "hidden";
+  var ARIA_ORIENTATION = ARIA_PREFIX + "orientation";
+  var ARIA_ROLEDESCRIPTION = ARIA_PREFIX + "roledescription";
+  var ARIA_LIVE = ARIA_PREFIX + "live";
+  var ARIA_BUSY = ARIA_PREFIX + "busy";
+  var ARIA_ATOMIC = ARIA_PREFIX + "atomic";
+  var ALL_ATTRIBUTES = [ROLE, TAB_INDEX, DISABLED, ARIA_CONTROLS, ARIA_CURRENT, ARIA_LABEL, ARIA_LABELLEDBY, ARIA_HIDDEN, ARIA_ORIENTATION, ARIA_ROLEDESCRIPTION];
+  var CLASS_PREFIX = PROJECT_CODE + "__";
+  var STATUS_CLASS_PREFIX = "is-";
+  var CLASS_ROOT = PROJECT_CODE;
+  var CLASS_TRACK = CLASS_PREFIX + "track";
+  var CLASS_LIST = CLASS_PREFIX + "list";
+  var CLASS_SLIDE = CLASS_PREFIX + "slide";
+  var CLASS_CLONE = CLASS_SLIDE + "--clone";
+  var CLASS_CONTAINER = CLASS_SLIDE + "__container";
+  var CLASS_ARROWS = CLASS_PREFIX + "arrows";
+  var CLASS_ARROW = CLASS_PREFIX + "arrow";
+  var CLASS_ARROW_PREV = CLASS_ARROW + "--prev";
+  var CLASS_ARROW_NEXT = CLASS_ARROW + "--next";
+  var CLASS_PAGINATION = CLASS_PREFIX + "pagination";
+  var CLASS_PAGINATION_PAGE = CLASS_PAGINATION + "__page";
+  var CLASS_PROGRESS = CLASS_PREFIX + "progress";
+  var CLASS_PROGRESS_BAR = CLASS_PROGRESS + "__bar";
+  var CLASS_TOGGLE = CLASS_PREFIX + "toggle";
+  var CLASS_TOGGLE_PLAY = CLASS_TOGGLE + "__play";
+  var CLASS_TOGGLE_PAUSE = CLASS_TOGGLE + "__pause";
+  var CLASS_SPINNER = CLASS_PREFIX + "spinner";
+  var CLASS_SR = CLASS_PREFIX + "sr";
+  var CLASS_INITIALIZED = STATUS_CLASS_PREFIX + "initialized";
+  var CLASS_ACTIVE = STATUS_CLASS_PREFIX + "active";
+  var CLASS_PREV = STATUS_CLASS_PREFIX + "prev";
+  var CLASS_NEXT = STATUS_CLASS_PREFIX + "next";
+  var CLASS_VISIBLE = STATUS_CLASS_PREFIX + "visible";
+  var CLASS_LOADING = STATUS_CLASS_PREFIX + "loading";
+  var CLASS_FOCUS_IN = STATUS_CLASS_PREFIX + "focus-in";
+  var CLASS_OVERFLOW = STATUS_CLASS_PREFIX + "overflow";
+  var STATUS_CLASSES = [CLASS_ACTIVE, CLASS_VISIBLE, CLASS_PREV, CLASS_NEXT, CLASS_LOADING, CLASS_FOCUS_IN, CLASS_OVERFLOW];
+  var CLASSES = {
+    slide: CLASS_SLIDE,
+    clone: CLASS_CLONE,
+    arrows: CLASS_ARROWS,
+    arrow: CLASS_ARROW,
+    prev: CLASS_ARROW_PREV,
+    next: CLASS_ARROW_NEXT,
+    pagination: CLASS_PAGINATION,
+    page: CLASS_PAGINATION_PAGE,
+    spinner: CLASS_SPINNER
+  };
+  function closest(from, selector) {
+    if (isFunction(from.closest)) {
+      return from.closest(selector);
+    }
+    var elm = from;
+    while (elm && elm.nodeType === 1) {
+      if (matches(elm, selector)) {
+        break;
+      }
+      elm = elm.parentElement;
+    }
+    return elm;
+  }
+  var FRICTION = 5;
+  var LOG_INTERVAL = 200;
+  var POINTER_DOWN_EVENTS = "touchstart mousedown";
+  var POINTER_MOVE_EVENTS = "touchmove mousemove";
+  var POINTER_UP_EVENTS = "touchend touchcancel mouseup click";
+  function Elements(Splide2, Components2, options) {
+    var _EventInterface = EventInterface(Splide2), on = _EventInterface.on, bind = _EventInterface.bind;
+    var root = Splide2.root;
+    var i18n = options.i18n;
+    var elements = {};
+    var slides = [];
+    var rootClasses = [];
+    var trackClasses = [];
+    var track;
+    var list;
+    var isUsingKey;
+    function setup() {
+      collect();
+      init();
+      update();
+    }
+    function mount() {
+      on(EVENT_REFRESH, destroy);
+      on(EVENT_REFRESH, setup);
+      on(EVENT_UPDATED, update);
+      bind(document, POINTER_DOWN_EVENTS + " keydown", function(e) {
+        isUsingKey = e.type === "keydown";
+      }, {
+        capture: true
+      });
+      bind(root, "focusin", function() {
+        toggleClass(root, CLASS_FOCUS_IN, !!isUsingKey);
+      });
+    }
+    function destroy(completely) {
+      var attrs = ALL_ATTRIBUTES.concat("style");
+      empty(slides);
+      removeClass(root, rootClasses);
+      removeClass(track, trackClasses);
+      removeAttribute([track, list], attrs);
+      removeAttribute(root, completely ? attrs : ["style", ARIA_ROLEDESCRIPTION]);
+    }
+    function update() {
+      removeClass(root, rootClasses);
+      removeClass(track, trackClasses);
+      rootClasses = getClasses(CLASS_ROOT);
+      trackClasses = getClasses(CLASS_TRACK);
+      addClass(root, rootClasses);
+      addClass(track, trackClasses);
+      setAttribute(root, ARIA_LABEL, options.label);
+      setAttribute(root, ARIA_LABELLEDBY, options.labelledby);
+    }
+    function collect() {
+      track = find("." + CLASS_TRACK);
+      list = child(track, "." + CLASS_LIST);
+      assert(track && list, "A track/list element is missing.");
+      push(slides, children(list, "." + CLASS_SLIDE + ":not(." + CLASS_CLONE + ")"));
+      forOwn({
+        arrows: CLASS_ARROWS,
+        pagination: CLASS_PAGINATION,
+        prev: CLASS_ARROW_PREV,
+        next: CLASS_ARROW_NEXT,
+        bar: CLASS_PROGRESS_BAR,
+        toggle: CLASS_TOGGLE
+      }, function(className, key) {
+        elements[key] = find("." + className);
+      });
+      assign(elements, {
+        root,
+        track,
+        list,
+        slides
+      });
+    }
+    function init() {
+      var id = root.id || uniqueId(PROJECT_CODE);
+      var role = options.role;
+      root.id = id;
+      track.id = track.id || id + "-track";
+      list.id = list.id || id + "-list";
+      if (!getAttribute(root, ROLE) && root.tagName !== "SECTION" && role) {
+        setAttribute(root, ROLE, role);
+      }
+      setAttribute(root, ARIA_ROLEDESCRIPTION, i18n.carousel);
+      setAttribute(list, ROLE, "presentation");
+    }
+    function find(selector) {
+      var elm = query(root, selector);
+      return elm && closest(elm, "." + CLASS_ROOT) === root ? elm : void 0;
+    }
+    function getClasses(base) {
+      return [base + "--" + options.type, base + "--" + options.direction, options.drag && base + "--draggable", options.isNavigation && base + "--nav", base === CLASS_ROOT && CLASS_ACTIVE];
+    }
+    return assign(elements, {
+      setup,
+      mount,
+      destroy
+    });
+  }
+  var SLIDE = "slide";
+  var LOOP = "loop";
+  var FADE = "fade";
+  function Slide$1(Splide2, index, slideIndex, slide) {
+    var event = EventInterface(Splide2);
+    var on = event.on, emit = event.emit, bind = event.bind;
+    var Components = Splide2.Components, root = Splide2.root, options = Splide2.options;
+    var isNavigation = options.isNavigation, updateOnMove = options.updateOnMove, i18n = options.i18n, pagination = options.pagination, slideFocus = options.slideFocus;
+    var resolve = Components.Direction.resolve;
+    var styles = getAttribute(slide, "style");
+    var label = getAttribute(slide, ARIA_LABEL);
+    var isClone = slideIndex > -1;
+    var container = child(slide, "." + CLASS_CONTAINER);
+    var destroyed;
+    function mount() {
+      if (!isClone) {
+        slide.id = root.id + "-slide" + pad(index + 1);
+        setAttribute(slide, ROLE, pagination ? "tabpanel" : "group");
+        setAttribute(slide, ARIA_ROLEDESCRIPTION, i18n.slide);
+        setAttribute(slide, ARIA_LABEL, label || format(i18n.slideLabel, [index + 1, Splide2.length]));
+      }
+      listen();
+    }
+    function listen() {
+      bind(slide, "click", apply(emit, EVENT_CLICK, self));
+      bind(slide, "keydown", apply(emit, EVENT_SLIDE_KEYDOWN, self));
+      on([EVENT_MOVED, EVENT_SHIFTED, EVENT_SCROLLED], update);
+      on(EVENT_NAVIGATION_MOUNTED, initNavigation);
+      if (updateOnMove) {
+        on(EVENT_MOVE, onMove);
+      }
+    }
+    function destroy() {
+      destroyed = true;
+      event.destroy();
+      removeClass(slide, STATUS_CLASSES);
+      removeAttribute(slide, ALL_ATTRIBUTES);
+      setAttribute(slide, "style", styles);
+      setAttribute(slide, ARIA_LABEL, label || "");
+    }
+    function initNavigation() {
+      var controls = Splide2.splides.map(function(target) {
+        var Slide2 = target.splide.Components.Slides.getAt(index);
+        return Slide2 ? Slide2.slide.id : "";
+      }).join(" ");
+      setAttribute(slide, ARIA_LABEL, format(i18n.slideX, (isClone ? slideIndex : index) + 1));
+      setAttribute(slide, ARIA_CONTROLS, controls);
+      setAttribute(slide, ROLE, slideFocus ? "button" : "");
+      slideFocus && removeAttribute(slide, ARIA_ROLEDESCRIPTION);
+    }
+    function onMove() {
+      if (!destroyed) {
+        update();
+      }
+    }
+    function update() {
+      if (!destroyed) {
+        var curr = Splide2.index;
+        updateActivity();
+        updateVisibility();
+        toggleClass(slide, CLASS_PREV, index === curr - 1);
+        toggleClass(slide, CLASS_NEXT, index === curr + 1);
+      }
+    }
+    function updateActivity() {
+      var active = isActive();
+      if (active !== hasClass(slide, CLASS_ACTIVE)) {
+        toggleClass(slide, CLASS_ACTIVE, active);
+        setAttribute(slide, ARIA_CURRENT, isNavigation && active || "");
+        emit(active ? EVENT_ACTIVE : EVENT_INACTIVE, self);
+      }
+    }
+    function updateVisibility() {
+      var visible = isVisible();
+      var hidden = !visible && (!isActive() || isClone);
+      if (!Splide2.state.is([MOVING, SCROLLING])) {
+        setAttribute(slide, ARIA_HIDDEN, hidden || "");
+      }
+      setAttribute(queryAll(slide, options.focusableNodes || ""), TAB_INDEX, hidden ? -1 : "");
+      if (slideFocus) {
+        setAttribute(slide, TAB_INDEX, hidden ? -1 : 0);
+      }
+      if (visible !== hasClass(slide, CLASS_VISIBLE)) {
+        toggleClass(slide, CLASS_VISIBLE, visible);
+        emit(visible ? EVENT_VISIBLE : EVENT_HIDDEN, self);
+      }
+      if (!visible && document.activeElement === slide) {
+        var Slide2 = Components.Slides.getAt(Splide2.index);
+        Slide2 && focus(Slide2.slide);
+      }
+    }
+    function style$1(prop, value, useContainer) {
+      style(useContainer && container || slide, prop, value);
+    }
+    function isActive() {
+      var curr = Splide2.index;
+      return curr === index || options.cloneStatus && curr === slideIndex;
+    }
+    function isVisible() {
+      if (Splide2.is(FADE)) {
+        return isActive();
+      }
+      var trackRect = rect(Components.Elements.track);
+      var slideRect = rect(slide);
+      var left = resolve("left", true);
+      var right = resolve("right", true);
+      return floor(trackRect[left]) <= ceil(slideRect[left]) && floor(slideRect[right]) <= ceil(trackRect[right]);
+    }
+    function isWithin(from, distance) {
+      var diff = abs(from - index);
+      if (!isClone && (options.rewind || Splide2.is(LOOP))) {
+        diff = min(diff, Splide2.length - diff);
+      }
+      return diff <= distance;
+    }
+    var self = {
+      index,
+      slideIndex,
+      slide,
+      container,
+      isClone,
+      mount,
+      destroy,
+      update,
+      style: style$1,
+      isWithin
+    };
+    return self;
+  }
+  function Slides(Splide2, Components2, options) {
+    var _EventInterface2 = EventInterface(Splide2), on = _EventInterface2.on, emit = _EventInterface2.emit, bind = _EventInterface2.bind;
+    var _Components2$Elements = Components2.Elements, slides = _Components2$Elements.slides, list = _Components2$Elements.list;
+    var Slides2 = [];
+    function mount() {
+      init();
+      on(EVENT_REFRESH, destroy);
+      on(EVENT_REFRESH, init);
+    }
+    function init() {
+      slides.forEach(function(slide, index) {
+        register(slide, index, -1);
+      });
+    }
+    function destroy() {
+      forEach$1(function(Slide2) {
+        Slide2.destroy();
+      });
+      empty(Slides2);
+    }
+    function update() {
+      forEach$1(function(Slide2) {
+        Slide2.update();
+      });
+    }
+    function register(slide, index, slideIndex) {
+      var object = Slide$1(Splide2, index, slideIndex, slide);
+      object.mount();
+      Slides2.push(object);
+      Slides2.sort(function(Slide1, Slide2) {
+        return Slide1.index - Slide2.index;
+      });
+    }
+    function get(excludeClones) {
+      return excludeClones ? filter(function(Slide2) {
+        return !Slide2.isClone;
+      }) : Slides2;
+    }
+    function getIn(page) {
+      var Controller2 = Components2.Controller;
+      var index = Controller2.toIndex(page);
+      var max2 = Controller2.hasFocus() ? 1 : options.perPage;
+      return filter(function(Slide2) {
+        return between(Slide2.index, index, index + max2 - 1);
+      });
+    }
+    function getAt(index) {
+      return filter(index)[0];
+    }
+    function add(items, index) {
+      forEach(items, function(slide) {
+        if (isString(slide)) {
+          slide = parseHtml(slide);
+        }
+        if (isHTMLElement(slide)) {
+          var ref = slides[index];
+          ref ? before(slide, ref) : append(list, slide);
+          addClass(slide, options.classes.slide);
+          observeImages(slide, apply(emit, EVENT_RESIZE));
+        }
+      });
+      emit(EVENT_REFRESH);
+    }
+    function remove$1(matcher) {
+      remove(filter(matcher).map(function(Slide2) {
+        return Slide2.slide;
+      }));
+      emit(EVENT_REFRESH);
+    }
+    function forEach$1(iteratee, excludeClones) {
+      get(excludeClones).forEach(iteratee);
+    }
+    function filter(matcher) {
+      return Slides2.filter(isFunction(matcher) ? matcher : function(Slide2) {
+        return isString(matcher) ? matches(Slide2.slide, matcher) : includes(toArray(matcher), Slide2.index);
+      });
+    }
+    function style2(prop, value, useContainer) {
+      forEach$1(function(Slide2) {
+        Slide2.style(prop, value, useContainer);
+      });
+    }
+    function observeImages(elm, callback) {
+      var images = queryAll(elm, "img");
+      var length = images.length;
+      if (length) {
+        images.forEach(function(img) {
+          bind(img, "load error", function() {
+            if (!--length) {
+              callback();
+            }
+          });
+        });
+      } else {
+        callback();
+      }
+    }
+    function getLength(excludeClones) {
+      return excludeClones ? slides.length : Slides2.length;
+    }
+    function isEnough() {
+      return Slides2.length > options.perPage;
+    }
+    return {
+      mount,
+      destroy,
+      update,
+      register,
+      get,
+      getIn,
+      getAt,
+      add,
+      remove: remove$1,
+      forEach: forEach$1,
+      filter,
+      style: style2,
+      getLength,
+      isEnough
+    };
+  }
+  function Layout(Splide2, Components2, options) {
+    var _EventInterface3 = EventInterface(Splide2), on = _EventInterface3.on, bind = _EventInterface3.bind, emit = _EventInterface3.emit;
+    var Slides2 = Components2.Slides;
+    var resolve = Components2.Direction.resolve;
+    var _Components2$Elements2 = Components2.Elements, root = _Components2$Elements2.root, track = _Components2$Elements2.track, list = _Components2$Elements2.list;
+    var getAt = Slides2.getAt, styleSlides = Slides2.style;
+    var vertical;
+    var rootRect;
+    var overflow;
+    function mount() {
+      init();
+      bind(window, "resize load", Throttle(apply(emit, EVENT_RESIZE)));
+      on([EVENT_UPDATED, EVENT_REFRESH], init);
+      on(EVENT_RESIZE, resize);
+    }
+    function init() {
+      vertical = options.direction === TTB;
+      style(root, "maxWidth", unit(options.width));
+      style(track, resolve("paddingLeft"), cssPadding(false));
+      style(track, resolve("paddingRight"), cssPadding(true));
+      resize(true);
+    }
+    function resize(force) {
+      var newRect = rect(root);
+      if (force || rootRect.width !== newRect.width || rootRect.height !== newRect.height) {
+        style(track, "height", cssTrackHeight());
+        styleSlides(resolve("marginRight"), unit(options.gap));
+        styleSlides("width", cssSlideWidth());
+        styleSlides("height", cssSlideHeight(), true);
+        rootRect = newRect;
+        emit(EVENT_RESIZED);
+        if (overflow !== (overflow = isOverflow())) {
+          toggleClass(root, CLASS_OVERFLOW, overflow);
+          emit(EVENT_OVERFLOW, overflow);
+        }
+      }
+    }
+    function cssPadding(right) {
+      var padding = options.padding;
+      var prop = resolve(right ? "right" : "left");
+      return padding && unit(padding[prop] || (isObject(padding) ? 0 : padding)) || "0px";
+    }
+    function cssTrackHeight() {
+      var height = "";
+      if (vertical) {
+        height = cssHeight();
+        assert(height, "height or heightRatio is missing.");
+        height = "calc(" + height + " - " + cssPadding(false) + " - " + cssPadding(true) + ")";
+      }
+      return height;
+    }
+    function cssHeight() {
+      return unit(options.height || rect(list).width * options.heightRatio);
+    }
+    function cssSlideWidth() {
+      return options.autoWidth ? null : unit(options.fixedWidth) || (vertical ? "" : cssSlideSize());
+    }
+    function cssSlideHeight() {
+      return unit(options.fixedHeight) || (vertical ? options.autoHeight ? null : cssSlideSize() : cssHeight());
+    }
+    function cssSlideSize() {
+      var gap = unit(options.gap);
+      return "calc((100%" + (gap && " + " + gap) + ")/" + (options.perPage || 1) + (gap && " - " + gap) + ")";
+    }
+    function listSize() {
+      return rect(list)[resolve("width")];
+    }
+    function slideSize(index, withoutGap) {
+      var Slide2 = getAt(index || 0);
+      return Slide2 ? rect(Slide2.slide)[resolve("width")] + (withoutGap ? 0 : getGap()) : 0;
+    }
+    function totalSize(index, withoutGap) {
+      var Slide2 = getAt(index);
+      if (Slide2) {
+        var right = rect(Slide2.slide)[resolve("right")];
+        var left = rect(list)[resolve("left")];
+        return abs(right - left) + (withoutGap ? 0 : getGap());
+      }
+      return 0;
+    }
+    function sliderSize(withoutGap) {
+      return totalSize(Splide2.length - 1) - totalSize(0) + slideSize(0, withoutGap);
+    }
+    function getGap() {
+      var Slide2 = getAt(0);
+      return Slide2 && parseFloat(style(Slide2.slide, resolve("marginRight"))) || 0;
+    }
+    function getPadding(right) {
+      return parseFloat(style(track, resolve("padding" + (right ? "Right" : "Left")))) || 0;
+    }
+    function isOverflow() {
+      return Splide2.is(FADE) || sliderSize(true) > listSize();
+    }
+    return {
+      mount,
+      resize,
+      listSize,
+      slideSize,
+      sliderSize,
+      totalSize,
+      getPadding,
+      isOverflow
+    };
+  }
+  var MULTIPLIER = 2;
+  function Clones(Splide2, Components2, options) {
+    var event = EventInterface(Splide2);
+    var on = event.on;
+    var Elements2 = Components2.Elements, Slides2 = Components2.Slides;
+    var resolve = Components2.Direction.resolve;
+    var clones = [];
+    var cloneCount;
+    function mount() {
+      on(EVENT_REFRESH, remount);
+      on([EVENT_UPDATED, EVENT_RESIZE], observe);
+      if (cloneCount = computeCloneCount()) {
+        generate(cloneCount);
+        Components2.Layout.resize(true);
+      }
+    }
+    function remount() {
+      destroy();
+      mount();
+    }
+    function destroy() {
+      remove(clones);
+      empty(clones);
+      event.destroy();
+    }
+    function observe() {
+      var count = computeCloneCount();
+      if (cloneCount !== count) {
+        if (cloneCount < count || !count) {
+          event.emit(EVENT_REFRESH);
+        }
+      }
+    }
+    function generate(count) {
+      var slides = Slides2.get().slice();
+      var length = slides.length;
+      if (length) {
+        while (slides.length < count) {
+          push(slides, slides);
+        }
+        push(slides.slice(-count), slides.slice(0, count)).forEach(function(Slide2, index) {
+          var isHead = index < count;
+          var clone = cloneDeep(Slide2.slide, index);
+          isHead ? before(clone, slides[0].slide) : append(Elements2.list, clone);
+          push(clones, clone);
+          Slides2.register(clone, index - count + (isHead ? 0 : length), Slide2.index);
+        });
+      }
+    }
+    function cloneDeep(elm, index) {
+      var clone = elm.cloneNode(true);
+      addClass(clone, options.classes.clone);
+      clone.id = Splide2.root.id + "-clone" + pad(index + 1);
+      return clone;
+    }
+    function computeCloneCount() {
+      var clones2 = options.clones;
+      if (!Splide2.is(LOOP)) {
+        clones2 = 0;
+      } else if (isUndefined(clones2)) {
+        var fixedSize = options[resolve("fixedWidth")] && Components2.Layout.slideSize(0);
+        var fixedCount = fixedSize && ceil(rect(Elements2.track)[resolve("width")] / fixedSize);
+        clones2 = fixedCount || options[resolve("autoWidth")] && Splide2.length || options.perPage * MULTIPLIER;
+      }
+      return clones2;
+    }
+    return {
+      mount,
+      destroy
+    };
+  }
+  function Move(Splide2, Components2, options) {
+    var _EventInterface4 = EventInterface(Splide2), on = _EventInterface4.on, emit = _EventInterface4.emit;
+    var set = Splide2.state.set;
+    var _Components2$Layout = Components2.Layout, slideSize = _Components2$Layout.slideSize, getPadding = _Components2$Layout.getPadding, totalSize = _Components2$Layout.totalSize, listSize = _Components2$Layout.listSize, sliderSize = _Components2$Layout.sliderSize;
+    var _Components2$Directio = Components2.Direction, resolve = _Components2$Directio.resolve, orient = _Components2$Directio.orient;
+    var _Components2$Elements3 = Components2.Elements, list = _Components2$Elements3.list, track = _Components2$Elements3.track;
+    var Transition;
+    function mount() {
+      Transition = Components2.Transition;
+      on([EVENT_MOUNTED, EVENT_RESIZED, EVENT_UPDATED, EVENT_REFRESH], reposition);
+    }
+    function reposition() {
+      if (!Components2.Controller.isBusy()) {
+        Components2.Scroll.cancel();
+        jump(Splide2.index);
+        Components2.Slides.update();
+      }
+    }
+    function move(dest, index, prev, callback) {
+      if (dest !== index && canShift(dest > prev)) {
+        cancel();
+        translate(shift(getPosition(), dest > prev), true);
+      }
+      set(MOVING);
+      emit(EVENT_MOVE, index, prev, dest);
+      Transition.start(index, function() {
+        set(IDLE);
+        emit(EVENT_MOVED, index, prev, dest);
+        callback && callback();
+      });
+    }
+    function jump(index) {
+      translate(toPosition(index, true));
+    }
+    function translate(position, preventLoop) {
+      if (!Splide2.is(FADE)) {
+        var destination = preventLoop ? position : loop(position);
+        style(list, "transform", "translate" + resolve("X") + "(" + destination + "px)");
+        position !== destination && emit(EVENT_SHIFTED);
+      }
+    }
+    function loop(position) {
+      if (Splide2.is(LOOP)) {
+        var index = toIndex(position);
+        var exceededMax = index > Components2.Controller.getEnd();
+        var exceededMin = index < 0;
+        if (exceededMin || exceededMax) {
+          position = shift(position, exceededMax);
+        }
+      }
+      return position;
+    }
+    function shift(position, backwards) {
+      var excess = position - getLimit(backwards);
+      var size = sliderSize();
+      position -= orient(size * (ceil(abs(excess) / size) || 1)) * (backwards ? 1 : -1);
+      return position;
+    }
+    function cancel() {
+      translate(getPosition(), true);
+      Transition.cancel();
+    }
+    function toIndex(position) {
+      var Slides2 = Components2.Slides.get();
+      var index = 0;
+      var minDistance = Infinity;
+      for (var i = 0; i < Slides2.length; i++) {
+        var slideIndex = Slides2[i].index;
+        var distance = abs(toPosition(slideIndex, true) - position);
+        if (distance <= minDistance) {
+          minDistance = distance;
+          index = slideIndex;
+        } else {
+          break;
+        }
+      }
+      return index;
+    }
+    function toPosition(index, trimming) {
+      var position = orient(totalSize(index - 1) - offset(index));
+      return trimming ? trim(position) : position;
+    }
+    function getPosition() {
+      var left = resolve("left");
+      return rect(list)[left] - rect(track)[left] + orient(getPadding(false));
+    }
+    function trim(position) {
+      if (options.trimSpace && Splide2.is(SLIDE)) {
+        position = clamp(position, 0, orient(sliderSize(true) - listSize()));
+      }
+      return position;
+    }
+    function offset(index) {
+      var focus2 = options.focus;
+      return focus2 === "center" ? (listSize() - slideSize(index, true)) / 2 : +focus2 * slideSize(index) || 0;
+    }
+    function getLimit(max2) {
+      return toPosition(max2 ? Components2.Controller.getEnd() : 0, !!options.trimSpace);
+    }
+    function canShift(backwards) {
+      var shifted = orient(shift(getPosition(), backwards));
+      return backwards ? shifted >= 0 : shifted <= list[resolve("scrollWidth")] - rect(track)[resolve("width")];
+    }
+    function exceededLimit(max2, position) {
+      position = isUndefined(position) ? getPosition() : position;
+      var exceededMin = max2 !== true && orient(position) < orient(getLimit(false));
+      var exceededMax = max2 !== false && orient(position) > orient(getLimit(true));
+      return exceededMin || exceededMax;
+    }
+    return {
+      mount,
+      move,
+      jump,
+      translate,
+      shift,
+      cancel,
+      toIndex,
+      toPosition,
+      getPosition,
+      getLimit,
+      exceededLimit,
+      reposition
+    };
+  }
+  function Controller(Splide2, Components2, options) {
+    var _EventInterface5 = EventInterface(Splide2), on = _EventInterface5.on, emit = _EventInterface5.emit;
+    var Move2 = Components2.Move;
+    var getPosition = Move2.getPosition, getLimit = Move2.getLimit, toPosition = Move2.toPosition;
+    var _Components2$Slides = Components2.Slides, isEnough = _Components2$Slides.isEnough, getLength = _Components2$Slides.getLength;
+    var omitEnd = options.omitEnd;
+    var isLoop = Splide2.is(LOOP);
+    var isSlide = Splide2.is(SLIDE);
+    var getNext = apply(getAdjacent, false);
+    var getPrev = apply(getAdjacent, true);
+    var currIndex = options.start || 0;
+    var endIndex;
+    var prevIndex = currIndex;
+    var slideCount;
+    var perMove;
+    var perPage;
+    function mount() {
+      init();
+      on([EVENT_UPDATED, EVENT_REFRESH, EVENT_END_INDEX_CHANGED], init);
+      on(EVENT_RESIZED, onResized);
+    }
+    function init() {
+      slideCount = getLength(true);
+      perMove = options.perMove;
+      perPage = options.perPage;
+      endIndex = getEnd();
+      var index = clamp(currIndex, 0, omitEnd ? endIndex : slideCount - 1);
+      if (index !== currIndex) {
+        currIndex = index;
+        Move2.reposition();
+      }
+    }
+    function onResized() {
+      if (endIndex !== getEnd()) {
+        emit(EVENT_END_INDEX_CHANGED);
+      }
+    }
+    function go(control, allowSameIndex, callback) {
+      if (!isBusy()) {
+        var dest = parse(control);
+        var index = loop(dest);
+        if (index > -1 && (allowSameIndex || index !== currIndex)) {
+          setIndex(index);
+          Move2.move(dest, index, prevIndex, callback);
+        }
+      }
+    }
+    function scroll(destination, duration, snap, callback) {
+      Components2.Scroll.scroll(destination, duration, snap, function() {
+        var index = loop(Move2.toIndex(getPosition()));
+        setIndex(omitEnd ? min(index, endIndex) : index);
+        callback && callback();
+      });
+    }
+    function parse(control) {
+      var index = currIndex;
+      if (isString(control)) {
+        var _ref = control.match(/([+\-<>])(\d+)?/) || [], indicator = _ref[1], number = _ref[2];
+        if (indicator === "+" || indicator === "-") {
+          index = computeDestIndex(currIndex + +("" + indicator + (+number || 1)), currIndex);
+        } else if (indicator === ">") {
+          index = number ? toIndex(+number) : getNext(true);
+        } else if (indicator === "<") {
+          index = getPrev(true);
+        }
+      } else {
+        index = isLoop ? control : clamp(control, 0, endIndex);
+      }
+      return index;
+    }
+    function getAdjacent(prev, destination) {
+      var number = perMove || (hasFocus() ? 1 : perPage);
+      var dest = computeDestIndex(currIndex + number * (prev ? -1 : 1), currIndex, !(perMove || hasFocus()));
+      if (dest === -1 && isSlide) {
+        if (!approximatelyEqual(getPosition(), getLimit(!prev), 1)) {
+          return prev ? 0 : endIndex;
+        }
+      }
+      return destination ? dest : loop(dest);
+    }
+    function computeDestIndex(dest, from, snapPage) {
+      if (isEnough() || hasFocus()) {
+        var index = computeMovableDestIndex(dest);
+        if (index !== dest) {
+          from = dest;
+          dest = index;
+          snapPage = false;
+        }
+        if (dest < 0 || dest > endIndex) {
+          if (!perMove && (between(0, dest, from, true) || between(endIndex, from, dest, true))) {
+            dest = toIndex(toPage(dest));
+          } else {
+            if (isLoop) {
+              dest = snapPage ? dest < 0 ? -(slideCount % perPage || perPage) : slideCount : dest;
+            } else if (options.rewind) {
+              dest = dest < 0 ? endIndex : 0;
+            } else {
+              dest = -1;
+            }
+          }
+        } else {
+          if (snapPage && dest !== from) {
+            dest = toIndex(toPage(from) + (dest < from ? -1 : 1));
+          }
+        }
+      } else {
+        dest = -1;
+      }
+      return dest;
+    }
+    function computeMovableDestIndex(dest) {
+      if (isSlide && options.trimSpace === "move" && dest !== currIndex) {
+        var position = getPosition();
+        while (position === toPosition(dest, true) && between(dest, 0, Splide2.length - 1, !options.rewind)) {
+          dest < currIndex ? --dest : ++dest;
+        }
+      }
+      return dest;
+    }
+    function loop(index) {
+      return isLoop ? (index + slideCount) % slideCount || 0 : index;
+    }
+    function getEnd() {
+      var end = slideCount - (hasFocus() || isLoop && perMove ? 1 : perPage);
+      while (omitEnd && end-- > 0) {
+        if (toPosition(slideCount - 1, true) !== toPosition(end, true)) {
+          end++;
+          break;
+        }
+      }
+      return clamp(end, 0, slideCount - 1);
+    }
+    function toIndex(page) {
+      return clamp(hasFocus() ? page : perPage * page, 0, endIndex);
+    }
+    function toPage(index) {
+      return hasFocus() ? min(index, endIndex) : floor((index >= endIndex ? slideCount - 1 : index) / perPage);
+    }
+    function toDest(destination) {
+      var closest2 = Move2.toIndex(destination);
+      return isSlide ? clamp(closest2, 0, endIndex) : closest2;
+    }
+    function setIndex(index) {
+      if (index !== currIndex) {
+        prevIndex = currIndex;
+        currIndex = index;
+      }
+    }
+    function getIndex(prev) {
+      return prev ? prevIndex : currIndex;
+    }
+    function hasFocus() {
+      return !isUndefined(options.focus) || options.isNavigation;
+    }
+    function isBusy() {
+      return Splide2.state.is([MOVING, SCROLLING]) && !!options.waitForTransition;
+    }
+    return {
+      mount,
+      go,
+      scroll,
+      getNext,
+      getPrev,
+      getAdjacent,
+      getEnd,
+      setIndex,
+      getIndex,
+      toIndex,
+      toPage,
+      toDest,
+      hasFocus,
+      isBusy
+    };
+  }
+  var XML_NAME_SPACE = "http://www.w3.org/2000/svg";
+  var PATH = "m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z";
+  var SIZE = 40;
+  function Arrows(Splide2, Components2, options) {
+    var event = EventInterface(Splide2);
+    var on = event.on, bind = event.bind, emit = event.emit;
+    var classes = options.classes, i18n = options.i18n;
+    var Elements2 = Components2.Elements, Controller2 = Components2.Controller;
+    var placeholder = Elements2.arrows, track = Elements2.track;
+    var wrapper = placeholder;
+    var prev = Elements2.prev;
+    var next = Elements2.next;
+    var created;
+    var wrapperClasses;
+    var arrows = {};
+    function mount() {
+      init();
+      on(EVENT_UPDATED, remount);
+    }
+    function remount() {
+      destroy();
+      mount();
+    }
+    function init() {
+      var enabled = options.arrows;
+      if (enabled && !(prev && next)) {
+        createArrows();
+      }
+      if (prev && next) {
+        assign(arrows, {
+          prev,
+          next
+        });
+        display(wrapper, enabled ? "" : "none");
+        addClass(wrapper, wrapperClasses = CLASS_ARROWS + "--" + options.direction);
+        if (enabled) {
+          listen();
+          update();
+          setAttribute([prev, next], ARIA_CONTROLS, track.id);
+          emit(EVENT_ARROWS_MOUNTED, prev, next);
+        }
+      }
+    }
+    function destroy() {
+      event.destroy();
+      removeClass(wrapper, wrapperClasses);
+      if (created) {
+        remove(placeholder ? [prev, next] : wrapper);
+        prev = next = null;
+      } else {
+        removeAttribute([prev, next], ALL_ATTRIBUTES);
+      }
+    }
+    function listen() {
+      on([EVENT_MOUNTED, EVENT_MOVED, EVENT_REFRESH, EVENT_SCROLLED, EVENT_END_INDEX_CHANGED], update);
+      bind(next, "click", apply(go, ">"));
+      bind(prev, "click", apply(go, "<"));
+    }
+    function go(control) {
+      Controller2.go(control, true);
+    }
+    function createArrows() {
+      wrapper = placeholder || create("div", classes.arrows);
+      prev = createArrow(true);
+      next = createArrow(false);
+      created = true;
+      append(wrapper, [prev, next]);
+      !placeholder && before(wrapper, track);
+    }
+    function createArrow(prev2) {
+      var arrow = '<button class="' + classes.arrow + " " + (prev2 ? classes.prev : classes.next) + '" type="button"><svg xmlns="' + XML_NAME_SPACE + '" viewBox="0 0 ' + SIZE + " " + SIZE + '" width="' + SIZE + '" height="' + SIZE + '" focusable="false"><path d="' + (options.arrowPath || PATH) + '" />';
+      return parseHtml(arrow);
+    }
+    function update() {
+      if (prev && next) {
+        var index = Splide2.index;
+        var prevIndex = Controller2.getPrev();
+        var nextIndex = Controller2.getNext();
+        var prevLabel = prevIndex > -1 && index < prevIndex ? i18n.last : i18n.prev;
+        var nextLabel = nextIndex > -1 && index > nextIndex ? i18n.first : i18n.next;
+        prev.disabled = prevIndex < 0;
+        next.disabled = nextIndex < 0;
+        setAttribute(prev, ARIA_LABEL, prevLabel);
+        setAttribute(next, ARIA_LABEL, nextLabel);
+        emit(EVENT_ARROWS_UPDATED, prev, next, prevIndex, nextIndex);
+      }
+    }
+    return {
+      arrows,
+      mount,
+      destroy,
+      update
+    };
+  }
+  var INTERVAL_DATA_ATTRIBUTE = DATA_ATTRIBUTE + "-interval";
+  function Autoplay(Splide2, Components2, options) {
+    var _EventInterface6 = EventInterface(Splide2), on = _EventInterface6.on, bind = _EventInterface6.bind, emit = _EventInterface6.emit;
+    var interval = RequestInterval(options.interval, Splide2.go.bind(Splide2, ">"), onAnimationFrame);
+    var isPaused = interval.isPaused;
+    var Elements2 = Components2.Elements, _Components2$Elements4 = Components2.Elements, root = _Components2$Elements4.root, toggle = _Components2$Elements4.toggle;
+    var autoplay = options.autoplay;
+    var hovered;
+    var focused;
+    var stopped = autoplay === "pause";
+    function mount() {
+      if (autoplay) {
+        listen();
+        toggle && setAttribute(toggle, ARIA_CONTROLS, Elements2.track.id);
+        stopped || play();
+        update();
+      }
+    }
+    function listen() {
+      if (options.pauseOnHover) {
+        bind(root, "mouseenter mouseleave", function(e) {
+          hovered = e.type === "mouseenter";
+          autoToggle();
+        });
+      }
+      if (options.pauseOnFocus) {
+        bind(root, "focusin focusout", function(e) {
+          focused = e.type === "focusin";
+          autoToggle();
+        });
+      }
+      if (toggle) {
+        bind(toggle, "click", function() {
+          stopped ? play() : pause(true);
+        });
+      }
+      on([EVENT_MOVE, EVENT_SCROLL, EVENT_REFRESH], interval.rewind);
+      on(EVENT_MOVE, onMove);
+    }
+    function play() {
+      if (isPaused() && Components2.Slides.isEnough()) {
+        interval.start(!options.resetProgress);
+        focused = hovered = stopped = false;
+        update();
+        emit(EVENT_AUTOPLAY_PLAY);
+      }
+    }
+    function pause(stop) {
+      if (stop === void 0) {
+        stop = true;
+      }
+      stopped = !!stop;
+      update();
+      if (!isPaused()) {
+        interval.pause();
+        emit(EVENT_AUTOPLAY_PAUSE);
+      }
+    }
+    function autoToggle() {
+      if (!stopped) {
+        hovered || focused ? pause(false) : play();
+      }
+    }
+    function update() {
+      if (toggle) {
+        toggleClass(toggle, CLASS_ACTIVE, !stopped);
+        setAttribute(toggle, ARIA_LABEL, options.i18n[stopped ? "play" : "pause"]);
+      }
+    }
+    function onAnimationFrame(rate) {
+      var bar = Elements2.bar;
+      bar && style(bar, "width", rate * 100 + "%");
+      emit(EVENT_AUTOPLAY_PLAYING, rate);
+    }
+    function onMove(index) {
+      var Slide2 = Components2.Slides.getAt(index);
+      interval.set(Slide2 && +getAttribute(Slide2.slide, INTERVAL_DATA_ATTRIBUTE) || options.interval);
+    }
+    return {
+      mount,
+      destroy: interval.cancel,
+      play,
+      pause,
+      isPaused
+    };
+  }
+  function Cover(Splide2, Components2, options) {
+    var _EventInterface7 = EventInterface(Splide2), on = _EventInterface7.on;
+    function mount() {
+      if (options.cover) {
+        on(EVENT_LAZYLOAD_LOADED, apply(toggle, true));
+        on([EVENT_MOUNTED, EVENT_UPDATED, EVENT_REFRESH], apply(cover, true));
+      }
+    }
+    function cover(cover2) {
+      Components2.Slides.forEach(function(Slide2) {
+        var img = child(Slide2.container || Slide2.slide, "img");
+        if (img && img.src) {
+          toggle(cover2, img, Slide2);
+        }
+      });
+    }
+    function toggle(cover2, img, Slide2) {
+      Slide2.style("background", cover2 ? 'center/cover no-repeat url("' + img.src + '")' : "", true);
+      display(img, cover2 ? "none" : "");
+    }
+    return {
+      mount,
+      destroy: apply(cover, false)
+    };
+  }
+  var BOUNCE_DIFF_THRESHOLD = 10;
+  var BOUNCE_DURATION = 600;
+  var FRICTION_FACTOR = 0.6;
+  var BASE_VELOCITY = 1.5;
+  var MIN_DURATION = 800;
+  function Scroll(Splide2, Components2, options) {
+    var _EventInterface8 = EventInterface(Splide2), on = _EventInterface8.on, emit = _EventInterface8.emit;
+    var set = Splide2.state.set;
+    var Move2 = Components2.Move;
+    var getPosition = Move2.getPosition, getLimit = Move2.getLimit, exceededLimit = Move2.exceededLimit, translate = Move2.translate;
+    var isSlide = Splide2.is(SLIDE);
+    var interval;
+    var callback;
+    var friction = 1;
+    function mount() {
+      on(EVENT_MOVE, clear);
+      on([EVENT_UPDATED, EVENT_REFRESH], cancel);
+    }
+    function scroll(destination, duration, snap, onScrolled, noConstrain) {
+      var from = getPosition();
+      clear();
+      if (snap && (!isSlide || !exceededLimit())) {
+        var size = Components2.Layout.sliderSize();
+        var offset = sign(destination) * size * floor(abs(destination) / size) || 0;
+        destination = Move2.toPosition(Components2.Controller.toDest(destination % size)) + offset;
+      }
+      var noDistance = approximatelyEqual(from, destination, 1);
+      friction = 1;
+      duration = noDistance ? 0 : duration || max(abs(destination - from) / BASE_VELOCITY, MIN_DURATION);
+      callback = onScrolled;
+      interval = RequestInterval(duration, onEnd, apply(update, from, destination, noConstrain), 1);
+      set(SCROLLING);
+      emit(EVENT_SCROLL);
+      interval.start();
+    }
+    function onEnd() {
+      set(IDLE);
+      callback && callback();
+      emit(EVENT_SCROLLED);
+    }
+    function update(from, to, noConstrain, rate) {
+      var position = getPosition();
+      var target = from + (to - from) * easing(rate);
+      var diff = (target - position) * friction;
+      translate(position + diff);
+      if (isSlide && !noConstrain && exceededLimit()) {
+        friction *= FRICTION_FACTOR;
+        if (abs(diff) < BOUNCE_DIFF_THRESHOLD) {
+          scroll(getLimit(exceededLimit(true)), BOUNCE_DURATION, false, callback, true);
+        }
+      }
+    }
+    function clear() {
+      if (interval) {
+        interval.cancel();
+      }
+    }
+    function cancel() {
+      if (interval && !interval.isPaused()) {
+        clear();
+        onEnd();
+      }
+    }
+    function easing(t) {
+      var easingFunc = options.easingFunc;
+      return easingFunc ? easingFunc(t) : 1 - Math.pow(1 - t, 4);
+    }
+    return {
+      mount,
+      destroy: clear,
+      scroll,
+      cancel
+    };
+  }
+  var SCROLL_LISTENER_OPTIONS = {
+    passive: false,
+    capture: true
+  };
+  function Drag(Splide2, Components2, options) {
+    var _EventInterface9 = EventInterface(Splide2), on = _EventInterface9.on, emit = _EventInterface9.emit, bind = _EventInterface9.bind, unbind = _EventInterface9.unbind;
+    var state = Splide2.state;
+    var Move2 = Components2.Move, Scroll2 = Components2.Scroll, Controller2 = Components2.Controller, track = Components2.Elements.track, reduce = Components2.Media.reduce;
+    var _Components2$Directio2 = Components2.Direction, resolve = _Components2$Directio2.resolve, orient = _Components2$Directio2.orient;
+    var getPosition = Move2.getPosition, exceededLimit = Move2.exceededLimit;
+    var basePosition;
+    var baseEvent;
+    var prevBaseEvent;
+    var isFree;
+    var dragging;
+    var exceeded = false;
+    var clickPrevented;
+    var disabled;
+    var target;
+    function mount() {
+      bind(track, POINTER_MOVE_EVENTS, noop, SCROLL_LISTENER_OPTIONS);
+      bind(track, POINTER_UP_EVENTS, noop, SCROLL_LISTENER_OPTIONS);
+      bind(track, POINTER_DOWN_EVENTS, onPointerDown, SCROLL_LISTENER_OPTIONS);
+      bind(track, "click", onClick, {
+        capture: true
+      });
+      bind(track, "dragstart", prevent);
+      on([EVENT_MOUNTED, EVENT_UPDATED], init);
+    }
+    function init() {
+      var drag = options.drag;
+      disable(!drag);
+      isFree = drag === "free";
+    }
+    function onPointerDown(e) {
+      clickPrevented = false;
+      if (!disabled) {
+        var isTouch = isTouchEvent(e);
+        if (isDraggable(e.target) && (isTouch || !e.button)) {
+          if (!Controller2.isBusy()) {
+            target = isTouch ? track : window;
+            dragging = state.is([MOVING, SCROLLING]);
+            prevBaseEvent = null;
+            bind(target, POINTER_MOVE_EVENTS, onPointerMove, SCROLL_LISTENER_OPTIONS);
+            bind(target, POINTER_UP_EVENTS, onPointerUp, SCROLL_LISTENER_OPTIONS);
+            Move2.cancel();
+            Scroll2.cancel();
+            save(e);
+          } else {
+            prevent(e, true);
+          }
+        }
+      }
+    }
+    function onPointerMove(e) {
+      if (!state.is(DRAGGING)) {
+        state.set(DRAGGING);
+        emit(EVENT_DRAG);
+      }
+      if (e.cancelable) {
+        if (dragging) {
+          Move2.translate(basePosition + constrain(diffCoord(e)));
+          var expired = diffTime(e) > LOG_INTERVAL;
+          var hasExceeded = exceeded !== (exceeded = exceededLimit());
+          if (expired || hasExceeded) {
+            save(e);
+          }
+          clickPrevented = true;
+          emit(EVENT_DRAGGING);
+          prevent(e);
+        } else if (isSliderDirection(e)) {
+          dragging = shouldStart(e);
+          prevent(e);
+        }
+      }
+    }
+    function onPointerUp(e) {
+      if (state.is(DRAGGING)) {
+        state.set(IDLE);
+        emit(EVENT_DRAGGED);
+      }
+      if (dragging) {
+        move(e);
+        prevent(e);
+      }
+      unbind(target, POINTER_MOVE_EVENTS, onPointerMove);
+      unbind(target, POINTER_UP_EVENTS, onPointerUp);
+      dragging = false;
+    }
+    function onClick(e) {
+      if (!disabled && clickPrevented) {
+        prevent(e, true);
+      }
+    }
+    function save(e) {
+      prevBaseEvent = baseEvent;
+      baseEvent = e;
+      basePosition = getPosition();
+    }
+    function move(e) {
+      var velocity = computeVelocity(e);
+      var destination = computeDestination(velocity);
+      var rewind = options.rewind && options.rewindByDrag;
+      reduce(false);
+      if (isFree) {
+        Controller2.scroll(destination, 0, options.snap);
+      } else if (Splide2.is(FADE)) {
+        Controller2.go(orient(sign(velocity)) < 0 ? rewind ? "<" : "-" : rewind ? ">" : "+");
+      } else if (Splide2.is(SLIDE) && exceeded && rewind) {
+        Controller2.go(exceededLimit(true) ? ">" : "<");
+      } else {
+        Controller2.go(Controller2.toDest(destination), true);
+      }
+      reduce(true);
+    }
+    function shouldStart(e) {
+      var thresholds = options.dragMinThreshold;
+      var isObj = isObject(thresholds);
+      var mouse = isObj && thresholds.mouse || 0;
+      var touch = (isObj ? thresholds.touch : +thresholds) || 10;
+      return abs(diffCoord(e)) > (isTouchEvent(e) ? touch : mouse);
+    }
+    function isSliderDirection(e) {
+      return abs(diffCoord(e)) > abs(diffCoord(e, true));
+    }
+    function computeVelocity(e) {
+      if (Splide2.is(LOOP) || !exceeded) {
+        var time = diffTime(e);
+        if (time && time < LOG_INTERVAL) {
+          return diffCoord(e) / time;
+        }
+      }
+      return 0;
+    }
+    function computeDestination(velocity) {
+      return getPosition() + sign(velocity) * min(abs(velocity) * (options.flickPower || 600), isFree ? Infinity : Components2.Layout.listSize() * (options.flickMaxPages || 1));
+    }
+    function diffCoord(e, orthogonal) {
+      return coordOf(e, orthogonal) - coordOf(getBaseEvent(e), orthogonal);
+    }
+    function diffTime(e) {
+      return timeOf(e) - timeOf(getBaseEvent(e));
+    }
+    function getBaseEvent(e) {
+      return baseEvent === e && prevBaseEvent || baseEvent;
+    }
+    function coordOf(e, orthogonal) {
+      return (isTouchEvent(e) ? e.changedTouches[0] : e)["page" + resolve(orthogonal ? "Y" : "X")];
+    }
+    function constrain(diff) {
+      return diff / (exceeded && Splide2.is(SLIDE) ? FRICTION : 1);
+    }
+    function isDraggable(target2) {
+      var noDrag = options.noDrag;
+      return !matches(target2, "." + CLASS_PAGINATION_PAGE + ", ." + CLASS_ARROW) && (!noDrag || !matches(target2, noDrag));
+    }
+    function isTouchEvent(e) {
+      return typeof TouchEvent !== "undefined" && e instanceof TouchEvent;
+    }
+    function isDragging() {
+      return dragging;
+    }
+    function disable(value) {
+      disabled = value;
+    }
+    return {
+      mount,
+      disable,
+      isDragging
+    };
+  }
+  var NORMALIZATION_MAP = {
+    Spacebar: " ",
+    Right: ARROW_RIGHT,
+    Left: ARROW_LEFT,
+    Up: ARROW_UP,
+    Down: ARROW_DOWN
+  };
+  function normalizeKey(key) {
+    key = isString(key) ? key : key.key;
+    return NORMALIZATION_MAP[key] || key;
+  }
+  var KEYBOARD_EVENT = "keydown";
+  function Keyboard(Splide2, Components2, options) {
+    var _EventInterface10 = EventInterface(Splide2), on = _EventInterface10.on, bind = _EventInterface10.bind, unbind = _EventInterface10.unbind;
+    var root = Splide2.root;
+    var resolve = Components2.Direction.resolve;
+    var target;
+    var disabled;
+    function mount() {
+      init();
+      on(EVENT_UPDATED, destroy);
+      on(EVENT_UPDATED, init);
+      on(EVENT_MOVE, onMove);
+    }
+    function init() {
+      var keyboard = options.keyboard;
+      if (keyboard) {
+        target = keyboard === "global" ? window : root;
+        bind(target, KEYBOARD_EVENT, onKeydown);
+      }
+    }
+    function destroy() {
+      unbind(target, KEYBOARD_EVENT);
+    }
+    function disable(value) {
+      disabled = value;
+    }
+    function onMove() {
+      var _disabled = disabled;
+      disabled = true;
+      nextTick(function() {
+        disabled = _disabled;
+      });
+    }
+    function onKeydown(e) {
+      if (!disabled) {
+        var key = normalizeKey(e);
+        if (key === resolve(ARROW_LEFT)) {
+          Splide2.go("<");
+        } else if (key === resolve(ARROW_RIGHT)) {
+          Splide2.go(">");
+        }
+      }
+    }
+    return {
+      mount,
+      destroy,
+      disable
+    };
+  }
+  var SRC_DATA_ATTRIBUTE = DATA_ATTRIBUTE + "-lazy";
+  var SRCSET_DATA_ATTRIBUTE = SRC_DATA_ATTRIBUTE + "-srcset";
+  var IMAGE_SELECTOR = "[" + SRC_DATA_ATTRIBUTE + "], [" + SRCSET_DATA_ATTRIBUTE + "]";
+  function LazyLoad(Splide2, Components2, options) {
+    var _EventInterface11 = EventInterface(Splide2), on = _EventInterface11.on, off = _EventInterface11.off, bind = _EventInterface11.bind, emit = _EventInterface11.emit;
+    var isSequential = options.lazyLoad === "sequential";
+    var events = [EVENT_MOVED, EVENT_SCROLLED];
+    var entries = [];
+    function mount() {
+      if (options.lazyLoad) {
+        init();
+        on(EVENT_REFRESH, init);
+      }
+    }
+    function init() {
+      empty(entries);
+      register();
+      if (isSequential) {
+        loadNext();
+      } else {
+        off(events);
+        on(events, check);
+        check();
+      }
+    }
+    function register() {
+      Components2.Slides.forEach(function(Slide2) {
+        queryAll(Slide2.slide, IMAGE_SELECTOR).forEach(function(img) {
+          var src = getAttribute(img, SRC_DATA_ATTRIBUTE);
+          var srcset = getAttribute(img, SRCSET_DATA_ATTRIBUTE);
+          if (src !== img.src || srcset !== img.srcset) {
+            var className = options.classes.spinner;
+            var parent = img.parentElement;
+            var spinner = child(parent, "." + className) || create("span", className, parent);
+            entries.push([img, Slide2, spinner]);
+            img.src || display(img, "none");
+          }
+        });
+      });
+    }
+    function check() {
+      entries = entries.filter(function(data) {
+        var distance = options.perPage * ((options.preloadPages || 1) + 1) - 1;
+        return data[1].isWithin(Splide2.index, distance) ? load(data) : true;
+      });
+      entries.length || off(events);
+    }
+    function load(data) {
+      var img = data[0];
+      addClass(data[1].slide, CLASS_LOADING);
+      bind(img, "load error", apply(onLoad, data));
+      setAttribute(img, "src", getAttribute(img, SRC_DATA_ATTRIBUTE));
+      setAttribute(img, "srcset", getAttribute(img, SRCSET_DATA_ATTRIBUTE));
+      removeAttribute(img, SRC_DATA_ATTRIBUTE);
+      removeAttribute(img, SRCSET_DATA_ATTRIBUTE);
+    }
+    function onLoad(data, e) {
+      var img = data[0], Slide2 = data[1];
+      removeClass(Slide2.slide, CLASS_LOADING);
+      if (e.type !== "error") {
+        remove(data[2]);
+        display(img, "");
+        emit(EVENT_LAZYLOAD_LOADED, img, Slide2);
+        emit(EVENT_RESIZE);
+      }
+      isSequential && loadNext();
+    }
+    function loadNext() {
+      entries.length && load(entries.shift());
+    }
+    return {
+      mount,
+      destroy: apply(empty, entries),
+      check
+    };
+  }
+  function Pagination(Splide2, Components2, options) {
+    var event = EventInterface(Splide2);
+    var on = event.on, emit = event.emit, bind = event.bind;
+    var Slides2 = Components2.Slides, Elements2 = Components2.Elements, Controller2 = Components2.Controller;
+    var hasFocus = Controller2.hasFocus, getIndex = Controller2.getIndex, go = Controller2.go;
+    var resolve = Components2.Direction.resolve;
+    var placeholder = Elements2.pagination;
+    var items = [];
+    var list;
+    var paginationClasses;
+    function mount() {
+      destroy();
+      on([EVENT_UPDATED, EVENT_REFRESH, EVENT_END_INDEX_CHANGED], mount);
+      var enabled = options.pagination;
+      placeholder && display(placeholder, enabled ? "" : "none");
+      if (enabled) {
+        on([EVENT_MOVE, EVENT_SCROLL, EVENT_SCROLLED], update);
+        createPagination();
+        update();
+        emit(EVENT_PAGINATION_MOUNTED, {
+          list,
+          items
+        }, getAt(Splide2.index));
+      }
+    }
+    function destroy() {
+      if (list) {
+        remove(placeholder ? slice(list.children) : list);
+        removeClass(list, paginationClasses);
+        empty(items);
+        list = null;
+      }
+      event.destroy();
+    }
+    function createPagination() {
+      var length = Splide2.length;
+      var classes = options.classes, i18n = options.i18n, perPage = options.perPage;
+      var max2 = hasFocus() ? Controller2.getEnd() + 1 : ceil(length / perPage);
+      list = placeholder || create("ul", classes.pagination, Elements2.track.parentElement);
+      addClass(list, paginationClasses = CLASS_PAGINATION + "--" + getDirection());
+      setAttribute(list, ROLE, "tablist");
+      setAttribute(list, ARIA_LABEL, i18n.select);
+      setAttribute(list, ARIA_ORIENTATION, getDirection() === TTB ? "vertical" : "");
+      for (var i = 0; i < max2; i++) {
+        var li = create("li", null, list);
+        var button = create("button", {
+          class: classes.page,
+          type: "button"
+        }, li);
+        var controls = Slides2.getIn(i).map(function(Slide2) {
+          return Slide2.slide.id;
+        });
+        var text = !hasFocus() && perPage > 1 ? i18n.pageX : i18n.slideX;
+        bind(button, "click", apply(onClick, i));
+        if (options.paginationKeyboard) {
+          bind(button, "keydown", apply(onKeydown, i));
+        }
+        setAttribute(li, ROLE, "presentation");
+        setAttribute(button, ROLE, "tab");
+        setAttribute(button, ARIA_CONTROLS, controls.join(" "));
+        setAttribute(button, ARIA_LABEL, format(text, i + 1));
+        setAttribute(button, TAB_INDEX, -1);
+        items.push({
+          li,
+          button,
+          page: i
+        });
+      }
+    }
+    function onClick(page) {
+      go(">" + page, true);
+    }
+    function onKeydown(page, e) {
+      var length = items.length;
+      var key = normalizeKey(e);
+      var dir = getDirection();
+      var nextPage = -1;
+      if (key === resolve(ARROW_RIGHT, false, dir)) {
+        nextPage = ++page % length;
+      } else if (key === resolve(ARROW_LEFT, false, dir)) {
+        nextPage = (--page + length) % length;
+      } else if (key === "Home") {
+        nextPage = 0;
+      } else if (key === "End") {
+        nextPage = length - 1;
+      }
+      var item = items[nextPage];
+      if (item) {
+        focus(item.button);
+        go(">" + nextPage);
+        prevent(e, true);
+      }
+    }
+    function getDirection() {
+      return options.paginationDirection || options.direction;
+    }
+    function getAt(index) {
+      return items[Controller2.toPage(index)];
+    }
+    function update() {
+      var prev = getAt(getIndex(true));
+      var curr = getAt(getIndex());
+      if (prev) {
+        var button = prev.button;
+        removeClass(button, CLASS_ACTIVE);
+        removeAttribute(button, ARIA_SELECTED);
+        setAttribute(button, TAB_INDEX, -1);
+      }
+      if (curr) {
+        var _button = curr.button;
+        addClass(_button, CLASS_ACTIVE);
+        setAttribute(_button, ARIA_SELECTED, true);
+        setAttribute(_button, TAB_INDEX, "");
+      }
+      emit(EVENT_PAGINATION_UPDATED, {
+        list,
+        items
+      }, prev, curr);
+    }
+    return {
+      items,
+      mount,
+      destroy,
+      getAt,
+      update
+    };
+  }
+  var TRIGGER_KEYS = [" ", "Enter"];
+  function Sync(Splide2, Components2, options) {
+    var isNavigation = options.isNavigation, slideFocus = options.slideFocus;
+    var events = [];
+    function mount() {
+      Splide2.splides.forEach(function(target) {
+        if (!target.isParent) {
+          sync(Splide2, target.splide);
+          sync(target.splide, Splide2);
+        }
+      });
+      if (isNavigation) {
+        navigate();
+      }
+    }
+    function destroy() {
+      events.forEach(function(event) {
+        event.destroy();
+      });
+      empty(events);
+    }
+    function remount() {
+      destroy();
+      mount();
+    }
+    function sync(splide, target) {
+      var event = EventInterface(splide);
+      event.on(EVENT_MOVE, function(index, prev, dest) {
+        target.go(target.is(LOOP) ? dest : index);
+      });
+      events.push(event);
+    }
+    function navigate() {
+      var event = EventInterface(Splide2);
+      var on = event.on;
+      on(EVENT_CLICK, onClick);
+      on(EVENT_SLIDE_KEYDOWN, onKeydown);
+      on([EVENT_MOUNTED, EVENT_UPDATED], update);
+      events.push(event);
+      event.emit(EVENT_NAVIGATION_MOUNTED, Splide2.splides);
+    }
+    function update() {
+      setAttribute(Components2.Elements.list, ARIA_ORIENTATION, options.direction === TTB ? "vertical" : "");
+    }
+    function onClick(Slide2) {
+      Splide2.go(Slide2.index);
+    }
+    function onKeydown(Slide2, e) {
+      if (includes(TRIGGER_KEYS, normalizeKey(e))) {
+        onClick(Slide2);
+        prevent(e);
+      }
+    }
+    return {
+      setup: apply(Components2.Media.set, {
+        slideFocus: isUndefined(slideFocus) ? isNavigation : slideFocus
+      }, true),
+      mount,
+      destroy,
+      remount
+    };
+  }
+  function Wheel(Splide2, Components2, options) {
+    var _EventInterface12 = EventInterface(Splide2), bind = _EventInterface12.bind;
+    var lastTime = 0;
+    function mount() {
+      if (options.wheel) {
+        bind(Components2.Elements.track, "wheel", onWheel, SCROLL_LISTENER_OPTIONS);
+      }
+    }
+    function onWheel(e) {
+      if (e.cancelable) {
+        var deltaY = e.deltaY;
+        var backwards = deltaY < 0;
+        var timeStamp = timeOf(e);
+        var _min = options.wheelMinThreshold || 0;
+        var sleep = options.wheelSleep || 0;
+        if (abs(deltaY) > _min && timeStamp - lastTime > sleep) {
+          Splide2.go(backwards ? "<" : ">");
+          lastTime = timeStamp;
+        }
+        shouldPrevent(backwards) && prevent(e);
+      }
+    }
+    function shouldPrevent(backwards) {
+      return !options.releaseWheel || Splide2.state.is(MOVING) || Components2.Controller.getAdjacent(backwards) !== -1;
+    }
+    return {
+      mount
+    };
+  }
+  var SR_REMOVAL_DELAY = 90;
+  function Live(Splide2, Components2, options) {
+    var _EventInterface13 = EventInterface(Splide2), on = _EventInterface13.on;
+    var track = Components2.Elements.track;
+    var enabled = options.live && !options.isNavigation;
+    var sr = create("span", CLASS_SR);
+    var interval = RequestInterval(SR_REMOVAL_DELAY, apply(toggle, false));
+    function mount() {
+      if (enabled) {
+        disable(!Components2.Autoplay.isPaused());
+        setAttribute(track, ARIA_ATOMIC, true);
+        sr.textContent = "\u2026";
+        on(EVENT_AUTOPLAY_PLAY, apply(disable, true));
+        on(EVENT_AUTOPLAY_PAUSE, apply(disable, false));
+        on([EVENT_MOVED, EVENT_SCROLLED], apply(toggle, true));
+      }
+    }
+    function toggle(active) {
+      setAttribute(track, ARIA_BUSY, active);
+      if (active) {
+        append(track, sr);
+        interval.start();
+      } else {
+        remove(sr);
+        interval.cancel();
+      }
+    }
+    function destroy() {
+      removeAttribute(track, [ARIA_LIVE, ARIA_ATOMIC, ARIA_BUSY]);
+      remove(sr);
+    }
+    function disable(disabled) {
+      if (enabled) {
+        setAttribute(track, ARIA_LIVE, disabled ? "off" : "polite");
+      }
+    }
+    return {
+      mount,
+      disable,
+      destroy
+    };
+  }
+  var ComponentConstructors = /* @__PURE__ */ Object.freeze({
+    __proto__: null,
+    Media,
+    Direction,
+    Elements,
+    Slides,
+    Layout,
+    Clones,
+    Move,
+    Controller,
+    Arrows,
+    Autoplay,
+    Cover,
+    Scroll,
+    Drag,
+    Keyboard,
+    LazyLoad,
+    Pagination,
+    Sync,
+    Wheel,
+    Live
+  });
+  var I18N = {
+    prev: "Previous slide",
+    next: "Next slide",
+    first: "Go to first slide",
+    last: "Go to last slide",
+    slideX: "Go to slide %s",
+    pageX: "Go to page %s",
+    play: "Start autoplay",
+    pause: "Pause autoplay",
+    carousel: "carousel",
+    slide: "slide",
+    select: "Select a slide to show",
+    slideLabel: "%s of %s"
+  };
+  var DEFAULTS = {
+    type: "slide",
+    role: "region",
+    speed: 400,
+    perPage: 1,
+    cloneStatus: true,
+    arrows: true,
+    pagination: true,
+    paginationKeyboard: true,
+    interval: 5e3,
+    pauseOnHover: true,
+    pauseOnFocus: true,
+    resetProgress: true,
+    easing: "cubic-bezier(0.25, 1, 0.5, 1)",
+    drag: true,
+    direction: "ltr",
+    trimSpace: true,
+    focusableNodes: "a, button, textarea, input, select, iframe",
+    live: true,
+    classes: CLASSES,
+    i18n: I18N,
+    reducedMotion: {
+      speed: 0,
+      rewindSpeed: 0,
+      autoplay: "pause"
+    }
+  };
+  function Fade(Splide2, Components2, options) {
+    var Slides2 = Components2.Slides;
+    function mount() {
+      EventInterface(Splide2).on([EVENT_MOUNTED, EVENT_REFRESH], init);
+    }
+    function init() {
+      Slides2.forEach(function(Slide2) {
+        Slide2.style("transform", "translateX(-" + 100 * Slide2.index + "%)");
+      });
+    }
+    function start(index, done) {
+      Slides2.style("transition", "opacity " + options.speed + "ms " + options.easing);
+      nextTick(done);
+    }
+    return {
+      mount,
+      start,
+      cancel: noop
+    };
+  }
+  function Slide(Splide2, Components2, options) {
+    var Move2 = Components2.Move, Controller2 = Components2.Controller, Scroll2 = Components2.Scroll;
+    var list = Components2.Elements.list;
+    var transition = apply(style, list, "transition");
+    var endCallback;
+    function mount() {
+      EventInterface(Splide2).bind(list, "transitionend", function(e) {
+        if (e.target === list && endCallback) {
+          cancel();
+          endCallback();
+        }
+      });
+    }
+    function start(index, done) {
+      var destination = Move2.toPosition(index, true);
+      var position = Move2.getPosition();
+      var speed = getSpeed(index);
+      if (abs(destination - position) >= 1 && speed >= 1) {
+        if (options.useScroll) {
+          Scroll2.scroll(destination, speed, false, done);
+        } else {
+          transition("transform " + speed + "ms " + options.easing);
+          Move2.translate(destination, true);
+          endCallback = done;
+        }
+      } else {
+        Move2.jump(index);
+        done();
+      }
+    }
+    function cancel() {
+      transition("");
+      Scroll2.cancel();
+    }
+    function getSpeed(index) {
+      var rewindSpeed = options.rewindSpeed;
+      if (Splide2.is(SLIDE) && rewindSpeed) {
+        var prev = Controller2.getIndex(true);
+        var end = Controller2.getEnd();
+        if (prev === 0 && index >= end || prev >= end && index === 0) {
+          return rewindSpeed;
+        }
+      }
+      return options.speed;
+    }
+    return {
+      mount,
+      start,
+      cancel
+    };
+  }
+  var _Splide = /* @__PURE__ */ function() {
+    function _Splide2(target, options) {
+      this.event = EventInterface();
+      this.Components = {};
+      this.state = State(CREATED);
+      this.splides = [];
+      this._o = {};
+      this._E = {};
+      var root = isString(target) ? query(document, target) : target;
+      assert(root, root + " is invalid.");
+      this.root = root;
+      options = merge({
+        label: getAttribute(root, ARIA_LABEL) || "",
+        labelledby: getAttribute(root, ARIA_LABELLEDBY) || ""
+      }, DEFAULTS, _Splide2.defaults, options || {});
+      try {
+        merge(options, JSON.parse(getAttribute(root, DATA_ATTRIBUTE)));
+      } catch (e) {
+        assert(false, "Invalid JSON");
+      }
+      this._o = Object.create(merge({}, options));
+    }
+    var _proto = _Splide2.prototype;
+    _proto.mount = function mount(Extensions, Transition) {
+      var _this = this;
+      var state = this.state, Components2 = this.Components;
+      assert(state.is([CREATED, DESTROYED]), "Already mounted!");
+      state.set(CREATED);
+      this._C = Components2;
+      this._T = Transition || this._T || (this.is(FADE) ? Fade : Slide);
+      this._E = Extensions || this._E;
+      var Constructors = assign({}, ComponentConstructors, this._E, {
+        Transition: this._T
+      });
+      forOwn(Constructors, function(Component, key) {
+        var component = Component(_this, Components2, _this._o);
+        Components2[key] = component;
+        component.setup && component.setup();
+      });
+      forOwn(Components2, function(component) {
+        component.mount && component.mount();
+      });
+      this.emit(EVENT_MOUNTED);
+      addClass(this.root, CLASS_INITIALIZED);
+      state.set(IDLE);
+      this.emit(EVENT_READY);
+      return this;
+    };
+    _proto.sync = function sync(splide) {
+      this.splides.push({
+        splide
+      });
+      splide.splides.push({
+        splide: this,
+        isParent: true
+      });
+      if (this.state.is(IDLE)) {
+        this._C.Sync.remount();
+        splide.Components.Sync.remount();
+      }
+      return this;
+    };
+    _proto.go = function go(control) {
+      this._C.Controller.go(control);
+      return this;
+    };
+    _proto.on = function on(events, callback) {
+      this.event.on(events, callback);
+      return this;
+    };
+    _proto.off = function off(events) {
+      this.event.off(events);
+      return this;
+    };
+    _proto.emit = function emit(event) {
+      var _this$event;
+      (_this$event = this.event).emit.apply(_this$event, [event].concat(slice(arguments, 1)));
+      return this;
+    };
+    _proto.add = function add(slides, index) {
+      this._C.Slides.add(slides, index);
+      return this;
+    };
+    _proto.remove = function remove2(matcher) {
+      this._C.Slides.remove(matcher);
+      return this;
+    };
+    _proto.is = function is(type) {
+      return this._o.type === type;
+    };
+    _proto.refresh = function refresh() {
+      this.emit(EVENT_REFRESH);
+      return this;
+    };
+    _proto.destroy = function destroy(completely) {
+      if (completely === void 0) {
+        completely = true;
+      }
+      var event = this.event, state = this.state;
+      if (state.is(CREATED)) {
+        EventInterface(this).on(EVENT_READY, this.destroy.bind(this, completely));
+      } else {
+        forOwn(this._C, function(component) {
+          component.destroy && component.destroy(completely);
+        }, true);
+        event.emit(EVENT_DESTROY);
+        event.destroy();
+        completely && empty(this.splides);
+        state.set(DESTROYED);
+      }
+      return this;
+    };
+    _createClass(_Splide2, [{
+      key: "options",
+      get: function get() {
+        return this._o;
+      },
+      set: function set(options) {
+        this._C.Media.set(options, true, true);
+      }
+    }, {
+      key: "length",
+      get: function get() {
+        return this._C.Slides.getLength(true);
+      }
+    }, {
+      key: "index",
+      get: function get() {
+        return this._C.Controller.getIndex();
+      }
+    }]);
+    return _Splide2;
+  }();
+  var Splide = _Splide;
+  Splide.defaults = {};
+  Splide.STATES = STATES;
+
+  // src/utils/easing.ts
+  function easeInOutQuad(t) {
+    return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+  }
+
+  // src/utils/transforms.ts
+  function getTranslateX(el) {
+    const m = getComputedStyle(el).transform;
+    if (!m || m === "none") return 0;
+    const m2d = m.match(/matrix\(([-0-9.,\s]+)\)/);
+    if (m2d && m2d[1]) {
+      const nums = m2d[1].split(",").map(Number);
+      return nums[4] || 0;
+    }
+    const m3d = m.match(/matrix3d\(([-0-9.,\s]+)\)/);
+    if (m3d && m3d[1]) {
+      const nums = m3d[1].split(",").map(Number);
+      return nums[12] || 0;
+    }
+    return 0;
+  }
+
+  // src/components/splide/autoScroll.ts
+  function createCustomAutoScroll(splide, element, opts) {
+    const list = splide.Components.Elements.list;
+    let running = false;
+    let rafId = 0;
+    let last = 0;
+    let baseX = 0;
+    let drift = 0;
+    let speed = opts.baseSpeedPxPerSec ?? 40;
+    const slowFactor = opts.slowFactor ?? 0.25;
+    let targetSpeed = speed;
+    const tweenMs = opts.tweenMs ?? 250;
+    function setTargetSpeed(newSpeed, duration) {
+      const from = targetSpeed;
+      const to = newSpeed;
+      const start2 = performance.now();
+      function step(now) {
+        const t = Math.min(1, (now - start2) / duration);
+        targetSpeed = from + (to - from) * easeInOutQuad(t);
+        if (t < 1) requestAnimationFrame(step);
+      }
+      if (duration > 0) requestAnimationFrame(step);
+      else targetSpeed = newSpeed;
+    }
+    function tick(ts) {
+      if (!running) return;
+      if (!last) last = ts;
+      const dt = (ts - last) / 1e3;
+      last = ts;
+      const v = targetSpeed;
+      drift += v * dt;
+      const x = baseX - drift;
+      list.style.transform = `translate3d(${x}px,0,0)`;
+      if (Math.abs(drift) > 2e4) {
+        baseX = getTranslateX(list);
+        drift = 0;
+      }
+      rafId = requestAnimationFrame(tick);
+    }
+    function start() {
+      if (running) return;
+      running = true;
+      last = 0;
+      baseX = getTranslateX(list);
+      list.style.willChange = "transform";
+      list.style.transform = `translate3d(${baseX - 0.01}px,0,0)`;
+      rafId = requestAnimationFrame(tick);
+    }
+    function stop() {
+      running = false;
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
+    element.addEventListener("mouseenter", () => setTargetSpeed(speed * slowFactor, tweenMs));
+    element.addEventListener("mouseleave", () => setTargetSpeed(speed, tweenMs));
+    element.addEventListener("focusin", () => setTargetSpeed(speed * slowFactor, tweenMs));
+    element.addEventListener("focusout", () => setTargetSpeed(speed, tweenMs));
+    splide.on("drag", stop);
+    splide.on("move", stop);
+    splide.on("moved", () => {
+      baseX = getTranslateX(list);
+      drift = 0;
+      ensureStart();
+    });
+    splide.on("resized", () => {
+      baseX = getTranslateX(list);
+      drift = 0;
+    });
+    function ensureStart() {
+      if (document.visibilityState === "visible" && !running) start();
+    }
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") ensureStart();
+      else stop();
+    });
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) ensureStart();
+          else stop();
+        });
+      },
+      { root: null, threshold: 0.1 }
+    );
+    io.observe(element);
+    return {
+      start,
+      stop,
+      setTargetSpeed,
+      setBaseSpeedPxPerSec: (px) => {
+        speed = px;
+        setTargetSpeed(px, 0);
+      }
+    };
+  }
+
+  // src/components/splide/hoverSlowdown.ts
+  function addHoverSlowdown(element, splide, opts) {
+    const factor = opts.factor ?? 0.33;
+    const rampMs = opts.rampMs ?? 250;
+    const controller = createCustomAutoScroll(splide, element, {
+      baseSpeedPxPerSec: opts.baseSpeedPxPerSec ?? 70,
+      slowFactor: factor,
+      tweenMs: rampMs
+    });
+    const kick = () => {
+      requestAnimationFrame(() => requestAnimationFrame(controller.start));
+    };
+    splide.on("ready", kick);
+    splide.on("mounted", kick);
+    splide.on("resized", () => {
+      requestAnimationFrame(() => requestAnimationFrame(controller.start));
+    });
+    if (document.visibilityState === "visible") {
+      requestAnimationFrame(() => requestAnimationFrame(controller.start));
+    }
+    const id = element.getAttribute("id") || "";
+    window.splideAuto = window.splideAuto || {};
+    window.splideAuto[id] = controller;
+    return { mode: "custom", controller };
+  }
+
+  // src/components/splide/wheelNavigation.ts
+  function addWheelNavigation(element, splide) {
+    const debounceDelay = 150;
+    let lastScrollTime = Date.now();
+    element.addEventListener(
+      "wheel",
+      function(event) {
+        if (event.ctrlKey) return;
+        const { deltaX } = event;
+        const { deltaY } = event;
+        if (event.shiftKey && Math.abs(deltaX) === 0) {
+          event.preventDefault();
+          if (deltaY > 0) splide.go("+1");
+          else if (deltaY < 0) splide.go("-1");
+          return;
+        }
+        if (!event.shiftKey && Math.abs(deltaX) !== 0) {
+          if (Math.abs(deltaX) <= Math.abs(deltaY)) return;
+          const scrollLeftMax = element.scrollWidth - element.offsetWidth;
+          if (element.scrollLeft + deltaX < 0 || element.scrollLeft + deltaX > scrollLeftMax) {
+            event.preventDefault();
+          }
+          const now = Date.now();
+          const elapsed = now - lastScrollTime;
+          if (elapsed > 1e3) {
+            if (deltaX > 0) splide.go("+1");
+            else if (deltaX < 0) splide.go("-1");
+            lastScrollTime = now;
+          } else if (elapsed >= debounceDelay) {
+            if (Math.abs(deltaX) > 5) {
+              if (deltaX > 0) splide.go("+1");
+              else if (deltaX < 0) splide.go("-1");
+              lastScrollTime = now;
+            }
+          }
+        }
+      },
+      false
+    );
+  }
+
+  // src/components/splide/initSplide.ts
+  function initSplide(selector, options, useAutoScroll) {
+    const splideElements = document.querySelectorAll(selector);
+    if (!splideElements.length) return;
+    splideElements.forEach((element, index) => {
+      const uniqueId2 = `${selector.replace(".", "")}-${index}`;
+      element.setAttribute("id", uniqueId2);
+      const splide = new Splide(element, { ...options });
+      splide.on("mounted", () => {
+        splide.Components.Elements.slides.forEach((slide, i) => {
+          slide.addEventListener("click", () => {
+            splide.go(i);
+          });
+        });
+        addWheelNavigation(element, splide);
+        if (useAutoScroll) {
+          const attr = element.getAttribute("data-auto-speed");
+          const baseSpeed = attr ? parseFloat(attr) : void 0;
+          addHoverSlowdown(element, splide, { factor: 0.33, rampMs: 250, baseSpeedPxPerSec: baseSpeed });
+        }
+      });
+      const progressBar = document.querySelector(".review-progress-bar");
+      if (progressBar && selector === ".review-slider") {
+        const updateProgress = () => {
+          const end = splide.Components.Controller.getEnd() + 1;
+          const rate = Math.min((splide.index + 1) / end, 1);
+          progressBar.style.width = String(100 * rate) + "%";
+        };
+        splide.on("move", updateProgress);
+        splide.on("mounted", updateProgress);
+        splide.on("ready", updateProgress);
+      }
+      const ext = window.splide && window.splide.Extensions ? window.splide.Extensions : void 0;
+      if (useAutoScroll && ext) {
+        splide.mount(ext);
+      } else {
+        splide.mount();
+      }
+    });
+  }
+
+  // src/index.ts
+  function boot() {
+    const splideConfigs = [
+      {
+        selector: ".review-slider",
+        options: {
+          type: "loop",
+          autoWidth: true,
+          perMove: 1,
+          gap: "0",
+          arrows: false,
+          pagination: false,
+          drag: true,
+          focus: "left",
+          snap: true,
+          autoScroll: { speed: 0.5, pauseOnHover: false, pauseOnFocus: false }
+        },
+        useAutoScroll: true
+      },
+      {
+        selector: ".article-slider",
+        options: {
+          type: "slide",
+          autoWidth: true,
+          perMove: 1,
+          gap: "0",
+          arrows: false,
+          pagination: false,
+          drag: true,
+          focus: "left",
+          snap: true
+        },
+        useAutoScroll: false
+      },
+      {
+        selector: ".about-cards",
+        options: {
+          type: "slide",
+          autoWidth: true,
+          perMove: 1,
+          gap: "0",
+          arrows: false,
+          pagination: false,
+          drag: true,
+          focus: "left",
+          snap: true
+        },
+        useAutoScroll: false
+      },
+      {
+        selector: ".service-cards",
+        options: {
+          type: "slide",
+          autoWidth: true,
+          perMove: 1,
+          gap: "0",
+          arrows: false,
+          pagination: false,
+          drag: true,
+          focus: "left",
+          snap: true
+        },
+        useAutoScroll: false
+      }
+    ];
+    splideConfigs.forEach((cfg) => initSplide(cfg.selector, cfg.options, cfg.useAutoScroll));
+  }
+  function whenWebflowReady(cb) {
+    const tryPush = (attempt = 0) => {
+      const wf = window.Webflow;
+      if (wf && typeof wf.push === "function") {
+        wf.push(cb);
+        return;
+      }
+      if (document.readyState === "complete") {
+        cb();
+        return;
+      }
+      if (attempt < 20) {
+        window.setTimeout(() => tryPush(attempt + 1), 50);
+      } else {
+        if (document.readyState === "complete") {
+          cb();
+        } else {
+          window.addEventListener("load", cb, { once: true });
+        }
+      }
+    };
+    tryPush();
+  }
+  whenWebflowReady(() => {
+    setTimeout(() => {
+      boot();
+    }, 100);
+  });
+  Object.assign(window, { boot });
+})();
 /*! Bundled license information:
 
 @splidejs/splide/dist/js/splide.esm.js:
@@ -20,3 +2905,4 @@
    * Copyright: 2022 Naotoshi Fujita
    *)
 */
+//# sourceMappingURL=index.js.map
