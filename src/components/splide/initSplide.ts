@@ -1,5 +1,6 @@
 import Splide from '@splidejs/splide';
 
+import { addDynamicArrows } from './dynamicArrows';
 import { addHoverSlowdown } from './hoverSlowdown';
 import { addWheelNavigation } from './wheelNavigation';
 
@@ -9,7 +10,7 @@ export type SplideInit = {
   useAutoScroll: boolean;
 };
 
-export function initSplide(selector: string, options: Record<string, any>, useAutoScroll: boolean) {
+export function initSplide(selector: string, options: Record<string, any>, useAutoScroll: boolean, useDynamicArrows = false) {
   const splideElements = document.querySelectorAll<HTMLElement>(selector);
   if (!splideElements.length) return;
 
@@ -20,13 +21,11 @@ export function initSplide(selector: string, options: Record<string, any>, useAu
     const splide = new Splide(element, { ...options });
 
     splide.on('mounted', () => {
-      (splide as any).Components.Elements.slides.forEach((slide: HTMLElement, i: number) => {
-        slide.addEventListener('click', () => {
-          splide.go(i);
-        });
-      });
-
       addWheelNavigation(element, splide);
+
+      if (useDynamicArrows) {
+        addDynamicArrows(element, splide);
+      }
 
       if (useAutoScroll) {
         const attr = element.getAttribute('data-auto-speed');

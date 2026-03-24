@@ -1,4 +1,6 @@
+import { initModalTriggers } from './components/modalTriggers';
 import { initSplide } from './components/splide/initSplide';
+import { initSyncFlexWrap } from './components/syncFlexWrap';
 
 function boot() {
   // Splide configs copied from Webflow inline script
@@ -63,10 +65,35 @@ function boot() {
         snap: true,
       },
       useAutoScroll: false,
+      useDynamicArrows: false,
+    },
+    {
+      selector: '.splide.service-cards-v2',
+      options: {
+        type: 'slide',
+        autoWidth: true,
+        perMove: 1,
+        gap: '0',
+        arrows: false,
+        pagination: false,
+        drag: true,
+        focus: 'left',
+        snap: true,
+        breakpoints: {
+          479: { destroy: true },
+        },
+      },
+      useAutoScroll: false,
+      useDynamicArrows: true,
     },
   ];
 
-  splideConfigs.forEach((cfg) => initSplide(cfg.selector, cfg.options, cfg.useAutoScroll));
+  splideConfigs.forEach((cfg) =>
+    initSplide(cfg.selector, cfg.options, cfg.useAutoScroll, cfg.useDynamicArrows)
+  );
+
+  initSyncFlexWrap();
+  initModalTriggers();
 }
 
 function whenWebflowReady(cb: () => void) {
