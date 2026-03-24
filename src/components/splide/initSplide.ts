@@ -2,7 +2,6 @@ import Splide from '@splidejs/splide';
 
 import { addDynamicArrows } from './dynamicArrows';
 import { addHoverSlowdown } from './hoverSlowdown';
-import { addWheelNavigation } from './wheelNavigation';
 
 export type SplideInit = {
   selector: string;
@@ -21,8 +20,6 @@ export function initSplide(selector: string, options: Record<string, any>, useAu
     const splide = new Splide(element, { ...options });
 
     splide.on('mounted', () => {
-      addWheelNavigation(element, splide);
-
       if (useDynamicArrows) {
         addDynamicArrows(element, splide);
       }
