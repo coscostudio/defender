@@ -25,3 +25,6 @@ typings/
 .env
 
 # Production files
+
+# Local AI instructions (not for version control)
+CLAUDE.md
