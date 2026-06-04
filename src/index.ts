@@ -1,4 +1,3 @@
-import { initModalTriggers } from './components/modalTriggers';
 import { initSplide } from './components/splide/initSplide';
 import { initSyncFlexWrap } from './components/syncFlexWrap';
 
@@ -93,7 +92,6 @@ function boot() {
   );
 
   initSyncFlexWrap();
-  initModalTriggers();
 }
 
 function whenWebflowReady(cb: () => void) {
