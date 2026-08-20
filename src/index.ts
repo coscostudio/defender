@@ -1,3 +1,4 @@
+import { initHowItWorksVideo } from './components/howItWorksVideo';
 import { initSplide } from './components/splide/initSplide';
 import { initSyncFlexWrap } from './components/syncFlexWrap';
 
@@ -92,6 +93,7 @@ function boot() {
   );
 
   initSyncFlexWrap();
+  initHowItWorksVideo();
 }
 
 function whenWebflowReady(cb: () => void) {
@@ -110,11 +112,7 @@ function whenWebflowReady(cb: () => void) {
     if (attempt < 20) {
       window.setTimeout(() => tryPush(attempt + 1), 50);
     } else {
-      if (document.readyState === 'complete') {
-        cb();
-      } else {
-        window.addEventListener('load', cb, { once: true });
-      }
+      window.addEventListener('load', cb, { once: true });
     }
   };
 
