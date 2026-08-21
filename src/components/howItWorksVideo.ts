@@ -5,15 +5,24 @@ const WRAPPER_SELECTOR = '.video-wrapper';
 const BUTTON_SELECTOR = '.video-button';
 const STYLE_ID = 'dd-howitworks-video-styles';
 const INITIALIZED_ATTR = 'data-dd-video-ready';
+const FADE_PENDING_ATTR = 'data-dd-video-fade-pending';
+const REVEALED_ATTR = 'data-dd-video-revealed';
 const CONTROLS_BOUND_ATTR = 'data-dd-video-controls-bound';
 const CONTROLS_VISIBLE_ATTR = 'data-video-controls-visible';
-const DEFAULT_VISIBLE_THRESHOLD = 0.2;
+const DEFAULT_VISIBLE_THRESHOLD = 0;
+const CONTROLS_HIDE_DELAY = 3000;
+const AUTOPLAY_FALLBACK_DELAY = 900;
 const PLAY_ICON = `<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5.25 3.2v9.6l7-4.8-7-4.8Z" fill="currentColor"/></svg>`;
 const PAUSE_ICON = `<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4.5 3.25h2.25v9.5H4.5v-9.5Zm4.75 0h2.25v9.5H9.25v-9.5Z" fill="currentColor"/></svg>`;
 
 type HlsController = {
   destroy: () => void;
   startLoad: () => void;
+};
+
+type ControlsVisibilityController = {
+  releasePersistent: () => void;
+  showPersistently: () => void;
 };
 
 export function initHowItWorksVideo() {
@@ -36,19 +45,61 @@ function initVideo(video: HTMLVideoElement) {
   ensureWrapperPosition(wrapper);
 
   const autoplay = readBoolean(video.dataset.autoplay, true);
-  const visibleThreshold = readNumber(video.dataset.visibleThreshold, DEFAULT_VISIBLE_THRESHOLD);
+  const visibleThreshold = readThreshold(video.dataset.visibleThreshold, DEFAULT_VISIBLE_THRESHOLD);
+  const observerThresholds = Array.from(new Set([0, visibleThreshold, 0.5, 1])).sort(
+    (a, b) => a - b
+  );
   let isInView = false;
   let shouldAutoResume = autoplay;
   let hlsController: HlsController | undefined;
   let sourceAttached = false;
+  let autoplayFallbackTimer = 0;
+  let isAwaitingAutoplay = false;
 
   video.playsInline = true;
   video.loop = readBoolean(video.dataset.loop, video.loop);
   video.muted = readBoolean(video.dataset.muted, video.muted || autoplay);
   video.preload = readPreload(video.getAttribute('preload'));
+  video.setAttribute(FADE_PENDING_ATTR, 'true');
 
   const button = wrapper.querySelector<HTMLElement>(BUTTON_SELECTOR);
   if (button) bindMuteButton(button, video, () => isInView && shouldAutoResume);
+
+  const controlsVisibility = bindProgressVisibility(wrapper);
+
+  const revealVideo = () => {
+    window.requestAnimationFrame(() => {
+      video.setAttribute(REVEALED_ATTR, 'true');
+    });
+  };
+
+  const clearAutoplayFallbackTimer = () => {
+    if (!autoplayFallbackTimer) return;
+    window.clearTimeout(autoplayFallbackTimer);
+    autoplayFallbackTimer = 0;
+  };
+
+  const showManualPlaybackPrompt = () => {
+    clearAutoplayFallbackTimer();
+    isAwaitingAutoplay = false;
+    shouldAutoResume = false;
+    revealVideo();
+    controlsVisibility.showPersistently();
+  };
+
+  const maybeShowManualPlaybackPrompt = () => {
+    if (!isAwaitingAutoplay || !isInView || !video.paused) return;
+    showManualPlaybackPrompt();
+  };
+
+  const queueAutoplayFallbackCheck = () => {
+    isAwaitingAutoplay = true;
+    clearAutoplayFallbackTimer();
+    autoplayFallbackTimer = window.setTimeout(
+      maybeShowManualPlaybackPrompt,
+      AUTOPLAY_FALLBACK_DELAY
+    );
+  };
 
   function attachSource() {
     if (sourceAttached) return;
@@ -92,15 +143,24 @@ function initVideo(video: HTMLVideoElement) {
     video.load();
   }
 
-  async function playFromViewport() {
+  async function playVideo(isAutoplayAttempt: boolean) {
     attachSource();
     hlsController?.startLoad();
+
+    if (isAutoplayAttempt) {
+      queueAutoplayFallbackCheck();
+    } else {
+      clearAutoplayFallbackTimer();
+      isAwaitingAutoplay = false;
+    }
 
     try {
       await video.play();
     } catch (error) {
-      if (isAutoplayBlocked(error)) {
-        shouldAutoResume = false;
+      if (isAutoplayAttempt && (isAutoplayBlocked(error) || video.paused)) {
+        maybeShowManualPlaybackPrompt();
+      } else if (!isAutoplayAttempt) {
+        controlsVisibility.showPersistently();
       }
     }
   }
@@ -115,7 +175,7 @@ function initVideo(video: HTMLVideoElement) {
   const togglePlayback = () => {
     if (video.paused || video.ended) {
       shouldAutoResume = true;
-      void playFromViewport();
+      void playVideo(false);
       return;
     }
 
@@ -124,7 +184,6 @@ function initVideo(video: HTMLVideoElement) {
   };
 
   const progress = createProgressControl(wrapper, video, togglePlayback);
-  bindProgressVisibility(wrapper);
 
   video.addEventListener('click', togglePlayback);
   video.addEventListener('keydown', (event) => {
@@ -143,19 +202,27 @@ function initVideo(video: HTMLVideoElement) {
   video.addEventListener('pause', syncPlaybackLabel);
   syncPlaybackLabel();
 
+  video.addEventListener('playing', revealVideo, { once: true });
+  video.addEventListener('playing', () => {
+    clearAutoplayFallbackTimer();
+    isAwaitingAutoplay = false;
+    controlsVisibility.releasePersistent();
+  });
+  video.addEventListener('loadeddata', maybeShowManualPlaybackPrompt);
+
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         isInView = entry.isIntersecting && entry.intersectionRatio >= visibleThreshold;
 
         if (isInView && shouldAutoResume) {
-          void playFromViewport();
+          void playVideo(true);
         } else if (!isInView) {
           pauseFromViewport();
         }
       });
     },
-    { threshold: [0, visibleThreshold, 0.5, 1] }
+    { threshold: observerThresholds }
   );
 
   observer.observe(video);
@@ -167,7 +234,7 @@ function initVideo(video: HTMLVideoElement) {
     }
 
     if (isInView && shouldAutoResume) {
-      void playFromViewport();
+      void playVideo(true);
     }
   });
 
@@ -181,6 +248,7 @@ function initVideo(video: HTMLVideoElement) {
 
   window.addEventListener('pagehide', () => {
     observer.disconnect();
+    clearAutoplayFallbackTimer();
     hlsController?.destroy();
   });
 }
@@ -342,11 +410,26 @@ function createRange() {
   return range;
 }
 
-function bindProgressVisibility(wrapper: HTMLElement) {
-  if (wrapper.getAttribute(CONTROLS_BOUND_ATTR) === 'true') return;
+function bindProgressVisibility(wrapper: HTMLElement): ControlsVisibilityController {
+  if (wrapper.getAttribute(CONTROLS_BOUND_ATTR) === 'true') {
+    return {
+      releasePersistent: () => {
+        wrapper.setAttribute(CONTROLS_VISIBLE_ATTR, 'true');
+        window.setTimeout(() => {
+          wrapper.removeAttribute(CONTROLS_VISIBLE_ATTR);
+        }, CONTROLS_HIDE_DELAY);
+      },
+      showPersistently: () => {
+        wrapper.setAttribute(CONTROLS_VISIBLE_ATTR, 'true');
+      },
+    };
+  }
+
   wrapper.setAttribute(CONTROLS_BOUND_ATTR, 'true');
 
   let hideTimer = 0;
+  let isMouseHovering = false;
+  let isPersistent = false;
 
   const clearHideTimer = () => {
     if (!hideTimer) return;
@@ -356,33 +439,76 @@ function bindProgressVisibility(wrapper: HTMLElement) {
 
   const hide = () => {
     clearHideTimer();
+    if (isPersistent) return;
     wrapper.removeAttribute(CONTROLS_VISIBLE_ATTR);
   };
 
-  const show = (duration = 2800) => {
+  const show = () => {
     wrapper.setAttribute(CONTROLS_VISIBLE_ATTR, 'true');
     clearHideTimer();
-    hideTimer = window.setTimeout(hide, duration);
   };
+
+  const showTemporarily = () => {
+    show();
+    if (isPersistent) return;
+
+    hideTimer = window.setTimeout(() => {
+      if (!isMouseHovering) hide();
+    }, CONTROLS_HIDE_DELAY);
+  };
+
+  const showPersistently = () => {
+    isPersistent = true;
+    show();
+  };
+
+  const releasePersistent = () => {
+    if (!isPersistent) return;
+    isPersistent = false;
+
+    if (isMouseHovering) {
+      show();
+      return;
+    }
+
+    showTemporarily();
+  };
+
+  wrapper.addEventListener('pointerenter', (event) => {
+    if (event.pointerType !== 'mouse') return;
+    isMouseHovering = true;
+    show();
+  });
+
+  wrapper.addEventListener('pointerleave', (event) => {
+    if (event.pointerType !== 'mouse') return;
+    isMouseHovering = false;
+    showTemporarily();
+  });
 
   wrapper.addEventListener('pointerdown', (event) => {
     if (event.pointerType === 'mouse') return;
 
-    const target = event.target instanceof Element ? event.target : null;
-    const isControlTap = Boolean(target?.closest('[data-video-progress]'));
-    show(isControlTap ? 5200 : 2800);
+    isMouseHovering = false;
+    showTemporarily();
   });
 
   wrapper.addEventListener('focusin', () => {
-    wrapper.setAttribute(CONTROLS_VISIBLE_ATTR, 'true');
-    clearHideTimer();
+    if (isMouseHovering) {
+      show();
+      return;
+    }
+
+    showTemporarily();
   });
 
   wrapper.addEventListener('focusout', () => {
     window.setTimeout(() => {
-      if (!wrapper.contains(document.activeElement)) hide();
+      if (!wrapper.contains(document.activeElement) && !isMouseHovering) hide();
     }, 0);
   });
+
+  return { releasePersistent, showPersistently };
 }
 
 function canPlayNativeHls(video: HTMLVideoElement) {
@@ -401,6 +527,10 @@ function readNumber(value: string | undefined, fallback: number) {
   if (value === undefined) return fallback;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function readThreshold(value: string | undefined, fallback: number) {
+  return Math.min(Math.max(readNumber(value, fallback), 0), 1);
 }
 
 function readPreload(value: string | null): HTMLVideoElement['preload'] {
@@ -427,6 +557,15 @@ function injectVideoStyles() {
 .video-howitworks {
   display: block;
   cursor: pointer;
+}
+
+.video-howitworks[${FADE_PENDING_ATTR}="true"] {
+  opacity: 0;
+  transition: opacity 360ms ease;
+}
+
+.video-howitworks[${FADE_PENDING_ATTR}="true"][${REVEALED_ATTR}="true"] {
+  opacity: 1;
 }
 
 .video-wrapper .video-controls {
@@ -481,8 +620,6 @@ function injectVideoStyles() {
   }
 }
 
-.video-wrapper:focus-within .dd-video-progress,
-.video-wrapper:focus-within .video-controls,
 .video-wrapper[data-video-controls-visible="true"] .dd-video-progress,
 .video-wrapper[data-video-controls-visible="true"] .video-controls {
   opacity: 1;
