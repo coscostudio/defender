@@ -16,7 +16,7 @@ const DEFAULT_MAX = 7;
 const DEFAULT_VALUE = 3;
 const DEFAULT_ANNUAL_SAVINGS_PER_VEHICLE = 180;
 const initializedCalculators = new WeakSet<HTMLElement>();
-type SavingsStepControl = HTMLAnchorElement | HTMLButtonElement;
+type SavingsStepControl = HTMLElement;
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   currency: 'USD',
@@ -90,16 +90,8 @@ function initCalculator(calculator: HTMLElement) {
     syncButton(increaseButton, vehicles >= max);
   };
 
-  decreaseButton?.addEventListener('click', (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    render(Number(input.value) - 1);
-  });
-  increaseButton?.addEventListener('click', (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    render(Number(input.value) + 1);
-  });
+  bindStepControl(decreaseButton, () => render(Number(input.value) - 1));
+  bindStepControl(increaseButton, () => render(Number(input.value) + 1));
   input.addEventListener('input', () => render(Number(input.value)));
   input.addEventListener('change', () => render(Number(input.value)));
 
@@ -127,7 +119,7 @@ function getSliderVisualPosition(progress: number) {
 function syncButton(button: SavingsStepControl | null, isDisabled: boolean) {
   if (!button) return;
 
-  if ('disabled' in button) button.disabled = isDisabled;
+  if (isDisableableControl(button)) button.disabled = isDisabled;
 
   button.classList.toggle('dd-step-disabled', isDisabled);
   button.classList.toggle('ddf-step-disabled', isDisabled);
@@ -140,10 +132,80 @@ function syncButton(button: SavingsStepControl | null, isDisabled: boolean) {
 function configureStepControl(control: SavingsStepControl | null) {
   if (!control) return;
 
-  control.setAttribute('role', 'button');
-  if (control instanceof HTMLAnchorElement) {
+  if (control instanceof HTMLButtonElement) {
+    control.type = 'button';
+  }
+
+  if (control instanceof HTMLInputElement && isInputStepButton(control)) {
+    control.type = 'button';
+  }
+
+  if (!isNativeButtonControl(control)) {
+    control.setAttribute('role', 'button');
+  }
+
+  if (!isNaturallyFocusable(control)) {
     control.setAttribute('tabindex', '0');
   }
+}
+
+function bindStepControl(control: SavingsStepControl | null, activate: () => void) {
+  if (!control) return;
+
+  control.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    focusControl(control);
+    if (isStepControlDisabled(control)) return;
+
+    activate();
+  });
+
+  control.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    if (isStepControlDisabled(control)) return;
+
+    activate();
+  });
+}
+
+function focusControl(control: SavingsStepControl) {
+  if (!isNaturallyFocusable(control)) return;
+
+  control.focus({ preventScroll: true });
+}
+
+function isStepControlDisabled(control: SavingsStepControl) {
+  return control.getAttribute('aria-disabled') === 'true';
+}
+
+function isDisableableControl(
+  control: SavingsStepControl
+): control is HTMLButtonElement | HTMLInputElement {
+  return control instanceof HTMLButtonElement || control instanceof HTMLInputElement;
+}
+
+function isInputStepButton(input: HTMLInputElement) {
+  return input.type === 'button' || input.type === 'submit';
+}
+
+function isNativeButtonControl(control: SavingsStepControl) {
+  return (
+    control instanceof HTMLButtonElement ||
+    (control instanceof HTMLInputElement && isInputStepButton(control))
+  );
+}
+
+function isNaturallyFocusable(control: SavingsStepControl) {
+  return (
+    control instanceof HTMLButtonElement ||
+    control instanceof HTMLInputElement ||
+    (control instanceof HTMLAnchorElement && control.hasAttribute('href')) ||
+    control.tabIndex >= 0
+  );
 }
 
 function vehicleCopy(count: number) {
