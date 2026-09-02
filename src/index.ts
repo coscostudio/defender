@@ -1,6 +1,16 @@
 import { initHowItWorksVideo } from './components/howItWorksVideo';
+import { initSavingsCalculator } from './components/savingsCalculator';
 import { initSplide } from './components/splide/initSplide';
 import { initSyncFlexWrap } from './components/syncFlexWrap';
+
+type WebflowGlobal = {
+  push?: (callback: () => void) => void;
+};
+
+type CustomWindow = Window & {
+  Webflow?: WebflowGlobal;
+  boot?: typeof boot;
+};
 
 function boot() {
   // Splide configs copied from Webflow inline script
@@ -93,12 +103,13 @@ function boot() {
   );
 
   initSyncFlexWrap();
+  initSavingsCalculator();
   initHowItWorksVideo();
 }
 
 function whenWebflowReady(cb: () => void) {
   const tryPush = (attempt = 0) => {
-    const wf: any = (window as any).Webflow;
+    const wf = (window as CustomWindow).Webflow;
     if (wf && typeof wf.push === 'function') {
       wf.push(cb);
       return;
@@ -127,4 +138,4 @@ whenWebflowReady(() => {
 });
 
 // Expose helper if you want to call it from the Webflow console
-Object.assign(window as any, { boot });
+Object.assign(window as CustomWindow, { boot });
