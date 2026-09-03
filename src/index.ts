@@ -50,9 +50,8 @@ function boot() {
         drag: true,
         focus: 'left',
         snap: true,
-        autoScroll: { speed: 0.5, pauseOnHover: false, pauseOnFocus: false },
       },
-      useAutoScroll: true,
+      useAutoScroll: false,
     },
     {
       selector: '.article-slider',
