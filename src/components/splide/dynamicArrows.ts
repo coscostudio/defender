@@ -4,6 +4,8 @@ const CHEVRON_LEFT = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24
 const CHEVRON_RIGHT = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`;
 
 export function addDynamicArrows(element: HTMLElement, splide: Splide) {
+  const mobileArrowsQuery = window.matchMedia('(max-width: 479px)');
+
   const prevBtn = document.createElement('button');
   prevBtn.type = 'button';
   prevBtn.className = 'sc-arrow sc-arrow--prev';
@@ -39,6 +41,12 @@ export function addDynamicArrows(element: HTMLElement, splide: Splide) {
   };
 
   const update = () => {
+    if (mobileArrowsQuery.matches) {
+      hide(prevBtn);
+      hide(nextBtn);
+      return;
+    }
+
     const list = element.querySelector<HTMLElement>('.splide__list');
     const track = element.querySelector<HTMLElement>('.splide__track');
     if (!list || !track) return;
@@ -72,9 +80,20 @@ export function addDynamicArrows(element: HTMLElement, splide: Splide) {
 
   splide.on('moved', update);
   splide.on('resize', update);
+  const watchArrowMedia = () => {
+    if (typeof mobileArrowsQuery.addEventListener === 'function') {
+      mobileArrowsQuery.addEventListener('change', update);
+      return () => mobileArrowsQuery.removeEventListener('change', update);
+    }
+
+    mobileArrowsQuery.addListener(update);
+    return () => mobileArrowsQuery.removeListener(update);
+  };
+  const unwatchArrowMedia = watchArrowMedia();
 
   // Always clean up buttons on destroy, regardless of ResizeObserver support
   splide.on('destroy', () => {
+    unwatchArrowMedia();
     prevBtn.remove();
     nextBtn.remove();
   });

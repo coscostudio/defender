@@ -9,12 +9,29 @@ export type CustomAutoScrollOptions = {
   tweenMs?: number;
 };
 
+export type CustomAutoScrollController = {
+  start: () => void;
+  stop: () => void;
+  setTargetSpeed: (newSpeed: number, duration: number) => void;
+  setBaseSpeedPxPerSec: (px: number) => void;
+};
+
+type SplideAutoScrollOptions = Splide['options'] & {
+  autoScroll?: {
+    speed?: number;
+  };
+};
+
 export function createCustomAutoScroll(
   splide: Splide,
   element: HTMLElement,
   opts: CustomAutoScrollOptions
-) {
-  const list = (splide as any).Components.Elements.list as HTMLElement;
+): CustomAutoScrollController {
+  const {
+    Components: {
+      Elements: { list },
+    },
+  } = splide;
   let running = false;
   let rafId = 0;
   let last = 0;
@@ -125,11 +142,11 @@ export function createCustomAutoScroll(
 }
 
 export function tweenAutoScrollSpeedExt(splide: Splide, toSpeed: number, durationMs: number) {
-  const getSpeed = () =>
-    ((splide.options as any).autoScroll && (splide.options as any).autoScroll.speed) || 0;
+  const getSpeed = () => (splide.options as SplideAutoScrollOptions).autoScroll?.speed || 0;
   const from = getSpeed();
   if (from === toSpeed || durationMs <= 0) {
-    (splide.options as any).autoScroll = { ...(splide.options as any).autoScroll, speed: toSpeed };
+    const options = splide.options as SplideAutoScrollOptions;
+    options.autoScroll = { ...options.autoScroll, speed: toSpeed };
     return;
   }
   const start = performance.now();
@@ -137,7 +154,8 @@ export function tweenAutoScrollSpeedExt(splide: Splide, toSpeed: number, duratio
     const t = Math.min(1, (now - start) / durationMs);
     const eased = easeInOutQuad(t);
     const current = from + (toSpeed - from) * eased;
-    (splide.options as any).autoScroll = { ...(splide.options as any).autoScroll, speed: current };
+    const options = splide.options as SplideAutoScrollOptions;
+    options.autoScroll = { ...options.autoScroll, speed: current };
     if (t < 1) requestAnimationFrame(step);
   }
   requestAnimationFrame(step);

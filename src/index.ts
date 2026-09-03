@@ -1,6 +1,10 @@
 import { initHowItWorksVideo } from './components/howItWorksVideo';
 import { initSavingsCalculator } from './components/savingsCalculator';
-import { initSplide } from './components/splide/initSplide';
+import {
+  initSplide,
+  type SplideOptions,
+  type SplideOptionsInput,
+} from './components/splide/initSplide';
 import { initSyncFlexWrap } from './components/syncFlexWrap';
 
 type WebflowGlobal = {
@@ -12,9 +16,28 @@ type CustomWindow = Window & {
   boot?: typeof boot;
 };
 
+type SplideConfig = {
+  selector: string;
+  options: SplideOptionsInput;
+  useAutoScroll: boolean;
+  useDynamicArrows?: boolean;
+};
+
 function boot() {
   // Splide configs copied from Webflow inline script
-  const splideConfigs = [
+  const serviceCardsV2Options = {
+    type: 'slide',
+    autoWidth: true,
+    perMove: 1,
+    gap: '0',
+    arrows: false,
+    pagination: false,
+    drag: true,
+    focus: 'left',
+    snap: true,
+  } satisfies SplideOptions;
+
+  const splideConfigs: SplideConfig[] = [
     {
       selector: '.review-slider',
       options: {
@@ -79,20 +102,12 @@ function boot() {
     },
     {
       selector: '.splide.service-cards-v2',
-      options: {
-        type: 'slide',
-        autoWidth: true,
-        perMove: 1,
-        gap: '0',
-        arrows: false,
-        pagination: false,
-        drag: true,
-        focus: 'left',
-        snap: true,
-        breakpoints: {
-          479: { destroy: true },
-        },
-      },
+      options: (element: HTMLElement) => ({
+        ...serviceCardsV2Options,
+        ...(element.querySelector('.splide__list.mobile-stack')
+          ? { breakpoints: { 479: { destroy: true } } }
+          : {}),
+      }),
       useAutoScroll: false,
       useDynamicArrows: true,
     },

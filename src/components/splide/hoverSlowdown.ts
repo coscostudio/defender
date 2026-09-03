@@ -1,6 +1,10 @@
 import type Splide from '@splidejs/splide';
 
-import { createCustomAutoScroll } from './autoScroll';
+import { createCustomAutoScroll, type CustomAutoScrollController } from './autoScroll';
+
+type CustomAutoWindow = Window & {
+  splideAuto?: Record<string, CustomAutoScrollController>;
+};
 
 export function addHoverSlowdown(
   element: HTMLElement,
@@ -33,8 +37,9 @@ export function addHoverSlowdown(
 
   // Expose controller per slider for runtime tweaks
   const id = element.getAttribute('id') || '';
-  (window as any).splideAuto = (window as any).splideAuto || {};
-  (window as any).splideAuto[id] = controller;
+  const customWindow = window as CustomAutoWindow;
+  customWindow.splideAuto = customWindow.splideAuto || {};
+  customWindow.splideAuto[id] = controller;
 
   return { mode: 'custom' as const, controller };
 }
