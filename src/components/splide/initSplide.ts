@@ -2,6 +2,8 @@ import Splide, { type Options } from '@splidejs/splide';
 
 import { addDynamicArrows } from './dynamicArrows';
 import { addHoverSlowdown } from './hoverSlowdown';
+import { registerKeyboardSlider } from './keyboardControl';
+import { addReviewSelectionStyles } from './selectionStyles';
 
 export type SplideInit = {
   selector: string;
@@ -31,6 +33,11 @@ export function initSplide(
 
     const resolvedOptions = typeof options === 'function' ? options(element, index) : options;
     const splide = new Splide(element, { ...resolvedOptions } as unknown as Options);
+    registerKeyboardSlider(element, splide);
+
+    if (selector === '.review-slider') {
+      addReviewSelectionStyles();
+    }
 
     splide.on('mounted', () => {
       if (useDynamicArrows) {
