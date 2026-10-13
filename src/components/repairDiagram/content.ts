@@ -12,11 +12,11 @@ export type Repair = {
   name: string;
   cost: number;
   detail: string;
+  /** What a Route 66 member pays for the covered repair (their deductible). */
+  plan?: number;
 };
 
 // Retail averages for parts and labor, from the Route 66 Extended Warranty sales sheet (2026).
-// Suspension is not on the sheet: its figure is the midpoint of RepairPal's 2025 strut
-// replacement estimates for comparable crossovers.
 export const REPAIRS: Repair[] = [
   {
     id: 'engine',
@@ -67,12 +67,6 @@ export const REPAIRS: Repair[] = [
     detail: 'The dash display, head unit and roof antenna are built into the vehicle.',
   },
   {
-    id: 'suspension',
-    name: 'Suspension',
-    cost: 1140,
-    detail: 'Struts, springs and control arms that keep the tires planted and the ride steady.',
-  },
-  {
     id: 'alternator',
     name: 'Alternator',
     cost: 1091,
@@ -80,11 +74,16 @@ export const REPAIRS: Repair[] = [
   },
 ];
 
+// Route 66 plans carry a $0 deductible: an approved, covered repair costs the member nothing.
+export const PLAN_COST = 0;
+export const OWN_LABEL = 'Repair bill on your own';
+export const PLAN_LABEL = 'With Route 66';
+
 export const HEADING = 'See what one breakdown can cost.';
 export const CAPTION =
-  'Parts pricing is based on an average of actual repairs at a retail rate for parts and labor. Actual repair costs may vary by repair facility, vehicle, and location.';
+  'Parts pricing is based on an average of actual repairs at a retail rate for parts and labor. Actual repair costs may vary by repair facility, vehicle, and location. With a Route 66 plan, covered repairs carry a $0 deductible once Route 66 approves the claim.';
 export const FIGURE_LABEL =
-  'Cutaway illustration of a crossover SUV showing where ten common repairs sit: engine, transmission, drive axle, A/C compressor, water pump, fuel pump, power steering, navigation, suspension and alternator.';
+  'Cutaway illustration of a crossover SUV showing where nine common repairs sit: engine, transmission, drive axle, A/C compressor, water pump, fuel pump, power steering, navigation and alternator.';
 
 export const currency = new Intl.NumberFormat('en-US', {
   currency: 'USD',
@@ -98,15 +97,12 @@ const escapeHtml = (text: string) =>
 /** The section's markup, in the same structure the Webflow page uses. */
 export function renderMarkup() {
   const first = REPAIRS[0];
+  const plan = first.plan ?? PLAN_COST;
   const on = (index: number) => (index === 0 ? ' is-active' : '');
-  const bars = REPAIRS.map(
-    (r, i) => `<div class="diagram_bar${on(i)}" data-ddx-bar="${r.id}"></div>`
-  ).join('');
   const rows = REPAIRS.map(
     (r, i) => `
       <li class="diagram_item"><div class="diagram_row${on(i)}" data-ddx-select="${r.id}">
         <div class="diagram_row-name">${escapeHtml(r.name)}</div>
-        <div class="diagram_row-meter"><div class="diagram_row-fill${on(i)}"></div></div>
         <div class="diagram_row-cost">${currency.format(r.cost)}</div>
         <p class="diagram_row-detail">${escapeHtml(r.detail)}</p>
       </div></li>`
@@ -116,11 +112,7 @@ export function renderMarkup() {
       <div class="diagram_figure" data-ddx-figure></div>
       <div class="diagram_panel">
         <h2 class="diagram_title">${escapeHtml(HEADING)}</h2>
-        <div class="diagram_reading">
-          <div class="diagram_cost" data-ddx-cost>${currency.format(first.cost)}</div>
-          <div class="diagram_name" data-ddx-name>${escapeHtml(first.name)}</div>
-        </div>
-        <div class="diagram_bars">${bars}</div>
+        <p class="diagram_save"><span class="diagram_save-name" data-ddx-name>${escapeHtml(first.name)}</span> – Save <span data-ddx-save>${currency.format(first.cost - plan)}</span> on a covered repair</p>
         <p class="diagram_detail" data-ddx-detail>${escapeHtml(first.detail)}</p>
         <ul role="list" class="diagram_list">${rows}</ul>
       </div>

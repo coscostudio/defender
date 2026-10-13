@@ -422,9 +422,9 @@ for (const side of [-1, 1])
       [x, yy, 64],
       Ln(c.back, { tone: 'lo' }) + S(G.disc(0, 41, 2.4, F, P), { tone: 'mid' }) + S(G.disc(2, 4, 7.6, F, P), { tone: 'mid' }) + Ln(c.front, { tone: 'mid' }),
       [record(A.cylinder(x, yy, 7.6, 44, 41, { name: 'susp.strut' }))],
-      { sys: 'suspension' },
     );
   }
+
 
 // ================================================================ cabin
 
@@ -741,8 +741,8 @@ for (const side of [-1, 1]) {
   // The far apron carries the coolant tank; the near one is left out so the accessory drive shows.
   if (side > 0) box('bay.apron', [x0, 338, 82], [x1, 428, 85], { tone: 'lo' }, { r: 1 });
   const T = zFrame([side * 60.6, AX_F - 6, 85]);
-  disc('bay.tower', T, 0, 7, 9.5, { tone: 'mid' }, { sys: 'suspension', inner: Ln(G.arcOf(T, 3.5, 9.5, P), { tone: 'faint' }) });
-  disc('bay.tower.cap', T, 7, 8.4, 6, { tone: 'mid' }, { sys: 'suspension', extra: Dots(G.dotsOf(T, 8.4, 4.4, 3, P, { all: true, phase: 0.5 }), { size: 0.55, tone: 'hi' }) });
+  disc('bay.tower', T, 0, 7, 9.5, { tone: 'mid' }, { inner: Ln(G.arcOf(T, 3.5, 9.5, P), { tone: 'faint' }) });
+  disc('bay.tower.cap', T, 7, 8.4, 6, { tone: 'mid' }, { extra: Dots(G.dotsOf(T, 8.4, 4.4, 3, P, { all: true, phase: 0.5 }), { size: 0.55, tone: 'hi' }) });
 }
 // Brake booster and master cylinder on the firewall, driver's side.
 {
@@ -776,7 +776,7 @@ const groups = R.items.map(
     `<g class="it"${PREVIEW ? ` data-name="${item.name}"` : ''}${item.sys ? ` data-sys="${item.sys}"` : ''}${item.name.startsWith('glass.') ? ' data-glass' : ''}>${item.svg}</g>`,
 );
 const LABEL =
-  'A crossover SUV with its near-side doors and fenders cut away, showing where ten common repairs sit: the engine, transmission, rear drive axle, A/C compressor, water pump, fuel pump, power-steering motor, navigation unit, suspension struts and alternator.';
+  'A crossover SUV with its near-side doors and fenders cut away, showing where nine common repairs sit: the engine, transmission, rear drive axle, A/C compressor, water pump, fuel pump, power-steering motor, navigation unit and alternator.';
 const svg = k.figureSvg({ width: W, height: H, label: LABEL, body: [
     `<g transform="matrix(-1 0 0 1 ${W} 0)">`,
     HALO,

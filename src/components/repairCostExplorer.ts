@@ -1,6 +1,9 @@
 import {
   currency,
   FIGURE_LABEL,
+  OWN_LABEL,
+  PLAN_COST,
+  PLAN_LABEL,
   renderMarkup,
   type Repair,
   REPAIRS,
@@ -10,7 +13,7 @@ import { FIGURE_CSS } from './repairDiagram/figureCss.generated';
 /**
  * Route 66 repair-cost explorer: a hybrid Webflow component.
  *
- * Webflow owns the panel: the heading, the price reading, the cost bars, the list of repairs
+ * Webflow owns the panel: the heading, the price comparison, the list of repairs
  * and the pricing note are native elements (`diagram_*` classes, `data-ddx-*` hooks), so they
  * are crawlable and editable in the Designer. Each row's name, price and description are read
  * from that markup. The code owns the figure: it fills `[data-ddx-figure]` with the card and the
@@ -51,8 +54,10 @@ function figureUrl(root: HTMLElement) {
 const text = (el: Element | null) => (el?.textContent ?? '').replace(/\s+/g, ' ').trim();
 
 /** Read the repairs from the Webflow rows, falling back to the built-in list per field. */
-function readRepairs(rows: HTMLElement[]): Repair[] {
+// The plan price comes from a row's `data-ddx-plan-cost` attribute, else the plan default ($0).
+function readRepairs(rows: HTMLElement[], planDefault: number): Repair[] {
   return rows.map((row) => {
+    const plan = Number(row.dataset.ddxPlanCost);
     const id = row.dataset.ddxSelect ?? '';
     const known = REPAIRS.find((r) => r.id === id);
     const cost = Number(text(row.querySelector('.diagram_row-cost')).replace(/[^0-9.]/g, ''));
@@ -61,6 +66,7 @@ function readRepairs(rows: HTMLElement[]): Repair[] {
       name: text(row.querySelector('.diagram_row-name')) || known?.name || id,
       cost: Number.isFinite(cost) && cost > 0 ? cost : (known?.cost ?? 0),
       detail: text(row.querySelector('.diagram_row-detail')) || known?.detail || '',
+      plan: row.dataset.ddxPlanCost && Number.isFinite(plan) ? plan : planDefault,
     };
   });
 }
@@ -69,15 +75,22 @@ function figureMarkup(first: Repair) {
   return `
     <div class="ddx iso" data-theme="light">
       <div class="iso-plate ddx-plate">
-        <div class="iso-plate-corners">
-          <span class="iso-plate-corner" data-corner="hint">
-            <span>Point at a part</span>
-            <button type="button" class="ddx-step" data-ddx-step="-1" aria-label="Previous repair">←</button>
-            <button type="button" class="ddx-step" data-ddx-step="1" aria-label="Next repair">→</button>
-          </span>
-          <span class="iso-plate-corner" data-corner="readout" data-readout aria-hidden="true">${first.name.toLowerCase()} · ${currency.format(first.cost)}</span>
-        </div>
         <div class="ddx-stage" data-ddx-stage tabindex="0" role="group" aria-label="${FIGURE_LABEL} Use the left and right arrow keys to step through them."></div>
+        <div class="ddx-nav">
+          <button type="button" class="ddx-step" data-ddx-step="-1" aria-label="Previous repair">←</button>
+          <span class="ddx-current" data-readout aria-hidden="true">${first.name}</span>
+          <button type="button" class="ddx-step" data-ddx-step="1" aria-label="Next repair">→</button>
+        </div>
+        <div class="ddx-compare">
+          <div class="ddx-mini">
+            <span class="ddx-mini-label">${OWN_LABEL}</span>
+            <span class="ddx-mini-cost is-own" data-ddx-cost>${currency.format(first.cost)}</span>
+          </div>
+          <div class="ddx-mini is-plan">
+            <span class="ddx-mini-label">${PLAN_LABEL}</span>
+            <span class="ddx-mini-cost" data-ddx-plan>${currency.format(first.plan ?? PLAN_COST)}</span>
+          </div>
+        </div>
       </div>
       <p class="ddx-sr" aria-live="polite" data-ddx-live></p>
     </div>`;
@@ -93,37 +106,32 @@ function mount(root: HTMLElement) {
 
   const el = root.querySelector<HTMLElement>('[data-ddx]');
   const slot = root.querySelector<HTMLElement>('[data-ddx-figure]');
-  const costEl = root.querySelector<HTMLElement>('[data-ddx-cost]');
   const nameEl = root.querySelector<HTMLElement>('[data-ddx-name]');
   const detailEl = root.querySelector<HTMLElement>('[data-ddx-detail]');
   const rows = Array.from(root.querySelectorAll<HTMLElement>('[data-ddx-select]'));
-  if (!el || !slot || !costEl || !nameEl || !detailEl || !rows.length) return;
+  if (!el || !slot || !rows.length) return;
 
-  const repairs = readRepairs(rows);
-  const max = Math.max(...repairs.map((r) => r.cost));
+  const repairs = readRepairs(rows, PLAN_COST);
   slot.innerHTML = figureMarkup(repairs[0]);
+  // The price comparison lives in the figure card; the panel carries the one-line saving.
+  const costEl = slot.querySelector<HTMLElement>('[data-ddx-cost]');
+  const planEl = slot.querySelector<HTMLElement>('[data-ddx-plan]');
   const stage = slot.querySelector<HTMLElement>('[data-ddx-stage]');
   const readout = slot.querySelector<HTMLElement>('[data-readout]');
   const live = slot.querySelector<HTMLElement>('[data-ddx-live]');
   const steppers = Array.from(slot.querySelectorAll<HTMLButtonElement>('[data-ddx-step]'));
-  const bars = Array.from(root.querySelectorAll<HTMLElement>('[data-ddx-bar]'));
-  if (!stage) return;
+  const saveEl = root.querySelector<HTMLElement>('[data-ddx-save]');
+  if (!stage || !costEl) return;
 
-  // The rows behave as toggle buttons; their meters and the cost bars are scaled by price.
+  // The rows behave as toggle buttons.
   rows.forEach((row, index) => {
     row.setAttribute('role', 'button');
     row.setAttribute('tabindex', '0');
-    const fill = row.querySelector<HTMLElement>('.diagram_row-fill');
-    if (fill) fill.style.width = `${((repairs[index].cost / max) * 100).toFixed(1)}%`;
     const detail = row.querySelector<HTMLElement>('.diagram_row-detail');
     if (detail) {
       detail.id ||= `ddx-detail-${repairs[index].id}`;
       row.setAttribute('aria-describedby', detail.id);
     }
-  });
-  bars.forEach((bar) => {
-    const repair = repairs.find((r) => r.id === bar.dataset.ddxBar);
-    if (repair) bar.style.flexGrow = String(repair.cost);
   });
 
   const still = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -171,21 +179,21 @@ function mount(root: HTMLElement) {
     const { cost, name } = repair;
 
     el.dataset.active = id;
-    nameEl.textContent = name;
-    detailEl.textContent = repair.detail;
+    if (nameEl) nameEl.textContent = name;
+    if (detailEl) detailEl.textContent = repair.detail;
     tweenCost(cost);
-    if (readout) readout.textContent = `${name.toLowerCase()} · ${currency.format(cost)}`;
+    if (planEl) planEl.textContent = currency.format(repair.plan ?? PLAN_COST);
+    if (saveEl) saveEl.textContent = currency.format(cost - (repair.plan ?? PLAN_COST));
+    if (readout) readout.textContent = name;
 
     rows.forEach((row) => {
       const on = row.dataset.ddxSelect === id;
       row.classList.toggle(ACTIVE, on);
-      row.querySelector('.diagram_row-fill')?.classList.toggle(ACTIVE, on);
       row.setAttribute('aria-pressed', String(on));
     });
-    bars.forEach((bar) => bar.classList.toggle(ACTIVE, bar.dataset.ddxBar === id));
     paintFigure();
     if (announce && live)
-      live.textContent = `${name}: ${currency.format(cost)} average repair cost.`;
+      live.textContent = `${name}: ${currency.format(cost)} average repair cost, ${currency.format(repair.plan ?? PLAN_COST)} with a Route 66 plan.`;
   };
 
   const step = (by: number) => {
@@ -307,14 +315,18 @@ function ensureStyles() {
 const FIGURE_CARD_CSS = `
 .ddx.iso[data-theme="light"]{--anatomy-card:#f5f4f1;--anatomy-paper:#f5f4f1;--anatomy-lit:#d94b16;--anatomy-halo-opacity:.18;--ddx-line:#dfdcd5;background:transparent;color:var(--anatomy-text);font-family:Inter,Arial,sans-serif;text-align:left}
 .ddx *{box-sizing:border-box}
-.ddx .iso-plate{padding:46px 18px 40px;border-radius:16px;background:var(--anatomy-card);box-shadow:0 1px 2px rgba(24,24,26,.06),0 8px 24px rgba(24,24,26,.06)}
-.ddx .iso-plate-corner{font-family:inherit;font-size:10.5px;line-height:1;text-transform:uppercase}
-.ddx .iso-plate-corner[data-corner="hint"]{display:flex;align-items:center;gap:2px;color:var(--anatomy-muted);letter-spacing:.1em}
-.ddx .iso-plate-corner[data-corner="readout"]{color:var(--anatomy-text);letter-spacing:.04em}
-.ddx-step{all:unset;box-sizing:border-box;display:inline-grid;place-items:center;min-width:24px;height:24px;margin:-7px 0;border-radius:6px;color:var(--anatomy-text);font-size:13px;letter-spacing:0;cursor:pointer;pointer-events:auto;transition:background-color .2s var(--anatomy-ease),color .2s var(--anatomy-ease)}
-.ddx-step:first-of-type{margin-left:4px}
-.ddx-step:hover{background:var(--ddx-line);color:var(--anatomy-strong)}
-.ddx-step:focus-visible{outline:2px solid var(--anatomy-strong);outline-offset:1px}
+.ddx .iso-plate{padding:40px 18px 28px;border-radius:16px;background:var(--anatomy-card);box-shadow:0 1px 2px rgba(24,24,26,.06),0 8px 24px rgba(24,24,26,.06)}
+.ddx-nav{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:12px}
+.ddx-current{min-width:12ch;color:var(--anatomy-strong);font-size:17px;font-weight:600;line-height:1.2;letter-spacing:.01em;text-align:center}
+.ddx-compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:440px;margin:14px auto 0}
+.ddx-mini{display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid var(--ddx-line);border-radius:12px;background:#fff}
+.ddx-mini.is-plan{border-color:transparent;background:rgba(217,75,22,.08)}
+.ddx-mini-label{color:var(--anatomy-muted);font-size:12.5px;font-weight:500;line-height:1.2}
+.ddx-mini-cost{color:var(--anatomy-lit);font-size:26px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.ddx-mini-cost.is-own{color:var(--anatomy-strong);opacity:.55;text-decoration:line-through;text-decoration-thickness:2px}
+.ddx-step{all:unset;box-sizing:border-box;display:inline-grid;place-items:center;flex:none;width:44px;height:44px;border:1px solid var(--ddx-line);border-radius:50%;background:#fff;color:var(--anatomy-strong);font-size:19px;line-height:1;cursor:pointer;transition:background-color .2s var(--anatomy-ease),border-color .2s var(--anatomy-ease),color .2s var(--anatomy-ease)}
+.ddx-step:hover{border-color:var(--anatomy-lit);color:var(--anatomy-lit)}
+.ddx-step:focus-visible{outline:2px solid var(--anatomy-strong);outline-offset:2px}
 .ddx-stage{position:relative;outline:none;aspect-ratio:960/540;cursor:default}
 .ddx-stage:focus-visible{box-shadow:0 0 0 2px var(--anatomy-strong);border-radius:8px}
 .ddx-stage svg{display:block;width:100%;height:auto}
@@ -322,5 +334,5 @@ const FIGURE_CARD_CSS = `
 [data-figure="error"] .ddx-stage{display:none}
 .ddx-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 [data-ddx-select]:focus-visible{outline:2px solid #18181a;outline-offset:2px}
-@media (max-width:767px){.ddx .iso-plate{padding:36px 6px 44px;overflow:hidden}.ddx-stage svg{width:116%;margin:0 -8%}}
+@media (max-width:767px){.ddx .iso-plate{padding:24px 6px 22px;overflow:hidden}.ddx .ddx-stage svg{width:116%;max-width:none;margin:0 0 0 -8%}.ddx-current{font-size:15px}.ddx-compare{margin:12px 8px 0}.ddx-mini{padding:10px 12px}.ddx-mini-cost{font-size:22px}}
 `;

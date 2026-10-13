@@ -33,12 +33,11 @@ test('loads the figure with every repair system tagged', async ({ page }) => {
       'fuel-pump',
       'navigation',
       'power-steering',
-      'suspension',
       'transmission',
       'water-pump',
     ].sort()
   );
-  await expect(page.locator('[data-ddx-select]')).toHaveCount(10);
+  await expect(page.locator('[data-ddx-select]')).toHaveCount(9);
 });
 
 test('a repair chosen in the list lights its parts in the drawing', async ({ page }) => {
@@ -46,7 +45,7 @@ test('a repair chosen in the list lights its parts in the drawing', async ({ pag
 
   await expect(page.locator('[data-ddx-name]')).toHaveText('Transmission');
   await expect(page.locator('[data-ddx-cost]')).toHaveText('$3,289');
-  await expect(page.locator('[data-readout]')).toHaveText('transmission · $3,289');
+  await expect(page.locator('[data-readout]')).toHaveText('Transmission');
 
   const lit = await page.locator('[data-ddx-stage] [data-on]').evaluateAll((items) => [
     ...new Set(items.map((item) => item.getAttribute('data-sys'))),
@@ -104,12 +103,25 @@ test('fits a phone viewport without horizontal page overflow', async ({ page }) 
   await expect(page.locator('[data-ddx-name]')).toBeVisible();
 });
 
-test('the arrows in the hint step through repairs on click', async ({ page }) => {
+test('the arrows beside the current part step through repairs on click', async ({ page }) => {
   await page.locator('[data-ddx-step="1"]').click();
   await expect(page.locator('[data-ddx-name]')).toHaveText('Transmission');
   await page.locator('[data-ddx-step="-1"]').click();
   await page.locator('[data-ddx-step="-1"]').click();
   await expect(page.locator('[data-ddx-name]')).toHaveText('Alternator');
+});
+
+test('the drawing stays centered in its card at every width', async ({ page }) => {
+  for (const width of [1280, 800, 600, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    const [stage, svg] = await page.evaluate(() =>
+      ['[data-ddx-stage]', '[data-ddx-stage] svg'].map((sel) => {
+        const r = document.querySelector(sel)!.getBoundingClientRect();
+        return r.left + r.width / 2;
+      })
+    );
+    expect(Math.abs(svg - stage)).toBeLessThan(2);
+  }
 });
 
 test('in one column the pricing note comes after the price list', async ({ page }) => {
@@ -129,12 +141,11 @@ test('reads repairs from the Webflow markup and keeps it in place', async ({ pag
         <div class="diagram_figure" data-ddx-figure></div>
         <div class="diagram_panel">
           <h2 class="diagram_title">See what one breakdown can cost.</h2>
-          <div class="diagram_cost" data-ddx-cost>$6,278</div><div class="diagram_name" data-ddx-name>Engine</div>
-          <div class="diagram_bars"><div class="diagram_bar is-active" data-ddx-bar="engine"></div><div class="diagram_bar" data-ddx-bar="alternator"></div></div>
+          <p class="diagram_save"><span data-ddx-name>Engine</span> – Save <span data-ddx-save>$6,278</span> on a covered repair</p>
           <p class="diagram_detail" data-ddx-detail>Block</p>
           <ul class="diagram_list">
-            <li><div class="diagram_row is-active" data-ddx-select="engine"><div class="diagram_row-name">Engine</div><div class="diagram_row-meter"><div class="diagram_row-fill is-active"></div></div><div class="diagram_row-cost">$6,278</div><p class="diagram_row-detail">Block</p></div></li>
-            <li><div class="diagram_row" data-ddx-select="alternator"><div class="diagram_row-name">Alternator (edited)</div><div class="diagram_row-meter"><div class="diagram_row-fill"></div></div><div class="diagram_row-cost">$1,500</div><p class="diagram_row-detail">Edited in Webflow.</p></div></li>
+            <li><div class="diagram_row is-active" data-ddx-select="engine"><div class="diagram_row-name">Engine</div><div class="diagram_row-cost">$6,278</div><p class="diagram_row-detail">Block</p></div></li>
+            <li><div class="diagram_row" data-ddx-select="alternator"><div class="diagram_row-name">Alternator (edited)</div><div class="diagram_row-cost">$1,500</div><p class="diagram_row-detail">Edited in Webflow.</p></div></li>
           </ul>
         </div>
         <p class="diagram_caption" data-ddx-caption>Pricing note</p>
@@ -148,7 +159,19 @@ test('reads repairs from the Webflow markup and keeps it in place', async ({ pag
   await page.locator('[data-ddx-select="alternator"]').click();
   await expect(page.locator('[data-ddx-cost]')).toHaveText('$1,500');
   await expect(page.locator('[data-ddx-name]')).toHaveText('Alternator (edited)');
+  await expect(page.locator('[data-ddx-save]')).toHaveText('$1,500');
+  // The prices sit inside the figure card, labelled, not loose in the panel.
+  await expect(page.locator('[data-ddx-figure] [data-ddx-cost]')).toHaveText('$1,500');
+  await expect(page.locator('[data-ddx-figure] [data-ddx-plan]')).toHaveText('$0');
   await expect(page.locator('[data-ddx-detail]')).toHaveText('Edited in Webflow.');
   await expect(page.locator('[data-ddx-select="alternator"]')).toHaveClass(/is-active/);
-  await expect(page.locator('[data-ddx-bar="alternator"]')).toHaveClass(/is-active/);
+});
+
+test('shows the plan price beside the repair cost', async ({ page }) => {
+  const plan = page.locator('[data-ddx-plan]');
+  await expect(plan).toHaveText('$0');
+  await page.locator('[data-ddx-select="navigation"]').click();
+  await expect(page.locator('[data-ddx-cost]')).toHaveText('$1,174');
+  await expect(plan).toHaveText('$0');
+  await expect(page.locator('[data-ddx-save]')).toHaveText('$1,174');
 });

@@ -77,7 +77,8 @@ function logServedFiles(server) {
 
   const filesInfo = files
     .map((file) => {
-      if (file.endsWith('.map')) return;
+      // Only scripts and styles get an import tag; other files (e.g. repair-suv.svg) are fetched at runtime.
+      if (!file.endsWith('.js') && !file.endsWith('.css')) return;
 
       // Normalize path and create file location
       const paths = file.split(sep);
