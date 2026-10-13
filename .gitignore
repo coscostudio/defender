@@ -26,5 +26,12 @@ typings/
 
 # Production files
 
+# Browser test artifacts
+test-results/
+playwright-report/
+
 # Local AI instructions (not for version control)
 CLAUDE.md
+
+# Figure preview page (node figures/suv/build.mjs --preview)
+figures/suv/preview.html

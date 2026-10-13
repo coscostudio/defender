@@ -1,4 +1,5 @@
 import { initHowItWorksVideo } from './components/howItWorksVideo';
+import { initRepairCostExplorer } from './components/repairCostExplorer';
 import { initSavingsCalculator } from './components/savingsCalculator';
 import {
   initSplide,
@@ -119,6 +120,7 @@ function boot() {
   initSyncFlexWrap();
   initSavingsCalculator();
   initHowItWorksVideo();
+  initRepairCostExplorer();
 }
 
 function whenWebflowReady(cb: () => void) {
