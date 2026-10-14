@@ -1,0 +1,33 @@
+name: Warm jsDelivr
+
+# jsDelivr pulls a new tag from GitHub on its first request, and that pull can stall or
+# fail (and the failure gets cached). Requesting the files right after tagging means the
+# first visitor gets a cached copy instead.
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  warm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request dist files until jsDelivr serves them
+        env:
+          BASE: https://cdn.jsdelivr.net/gh/${{ github.repository }}@${{ github.ref_name }}/dist
+        run: |
+          set -u
+          failed=0
+          for file in index.js repair-suv.svg; do
+            ok=0
+            for attempt in 1 2 3 4 5 6; do
+              status=$(curl -s -o /dev/null -w '%{http_code}' --max-time 120 "$BASE/$file" || true)
+              echo "$file attempt $attempt: $status"
+              if [ "$status" = "200" ]; then ok=1; break; fi
+              # A failed pull can be cached; purge it before trying again.
+              curl -s -o /dev/null "https://purge.jsdelivr.net/gh/${{ github.repository }}@${{ github.ref_name }}/dist/$file" || true
+              sleep 20
+            done
+            [ "$ok" = "1" ] || failed=1
+          done
+          exit $failed

@@ -31,6 +31,11 @@ const FIGURE_FILE = 'repair-suv.svg';
 const ACTIVE = 'is-active';
 const TOUR_STEP_MS = 3600;
 const TOUR_RESUME_MS = 9000;
+// jsDelivr occasionally stalls or errors on the first request for a new release; past this
+// delay the figure is also requested straight from GitHub, and whichever arrives first wins.
+const FIGURE_BACKUP_DELAY_MS = 4000;
+const JSDELIVR_GH =
+  /^https:\/\/(?:cdn|fastly|gcore)\.jsdelivr\.net\/gh\/([^/]+)\/([^/@]+)@([^/]+)\//;
 
 // Captured while the bundle executes, so the figure loads from wherever the bundle is served.
 const SCRIPT_SRC = (document.currentScript as HTMLScriptElement | null)?.src ?? '';
@@ -49,6 +54,41 @@ function figureUrl(root: HTMLElement) {
   } catch {
     return FIGURE_FILE;
   }
+}
+
+// The same file on raw.githubusercontent.com, when the bundle is served from jsDelivr's GitHub mirror.
+function figureBackupUrl(root: HTMLElement) {
+  if (root.dataset.figureSrc) return;
+  const match = SCRIPT_SRC.match(JSDELIVR_GH);
+  if (!match) return;
+  const [, user, repo, ref] = match;
+  const dir = new URL('.', SCRIPT_SRC).pathname.split(`@${ref}/`)[1] ?? '';
+  return `https://raw.githubusercontent.com/${user}/${repo}/${ref}/${dir}${FIGURE_FILE}`;
+}
+
+function fetchFigure(primary: string, backup?: string) {
+  const controller = new AbortController();
+  const get = (url: string) =>
+    fetch(url, { signal: controller.signal }).then((response) => {
+      if (!response.ok) throw new Error(`figure ${response.status}`);
+      return response.text();
+    });
+
+  const first = get(primary);
+  if (!backup) return first;
+
+  const second = new Promise<string>((resolve, reject) => {
+    let started = false;
+    const start = () => {
+      if (started) return;
+      started = true;
+      get(backup).then(resolve, reject);
+    };
+    const timer = window.setTimeout(start, FIGURE_BACKUP_DELAY_MS);
+    first.then(() => window.clearTimeout(timer), start);
+  });
+
+  return Promise.any([first, second]).finally(() => controller.abort());
 }
 
 const text = (el: Element | null) => (el?.textContent ?? '').replace(/\s+/g, ' ').trim();
@@ -286,11 +326,8 @@ function mount(root: HTMLElement) {
 
   select(active, { force: true });
 
-  fetch(figureUrl(root))
-    .then((response) => {
-      if (!response.ok) throw new Error(`figure ${response.status}`);
-      return response.text();
-    })
+  el.dataset.figure = 'loading';
+  fetchFigure(figureUrl(root), figureBackupUrl(root))
     .then((svg) => {
       stage.innerHTML = svg;
       stage.querySelector('svg')?.setAttribute('focusable', 'false');
@@ -332,6 +369,9 @@ const FIGURE_CARD_CSS = `
 .ddx-stage svg{display:block;width:100%;height:auto}
 .ddx-stage [data-sys]{cursor:pointer}
 [data-figure="error"] .ddx-stage{display:none}
+[data-figure="loading"] .ddx-stage::after{content:"";position:absolute;top:50%;left:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border:2px solid var(--ddx-line);border-top-color:var(--anatomy-muted);border-radius:50%;opacity:0;animation:ddx-spin .8s linear infinite,ddx-appear .2s .4s forwards}
+@keyframes ddx-spin{to{transform:rotate(360deg)}}
+@keyframes ddx-appear{to{opacity:1}}
 .ddx-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 [data-ddx-select]:focus-visible{outline:2px solid #18181a;outline-offset:2px}
 @media (max-width:767px){.ddx .iso-plate{padding:24px 6px 22px;overflow:hidden}.ddx .ddx-stage svg{width:116%;max-width:none;margin:0 0 0 -8%}.ddx-current{font-size:15px}.ddx-compare{margin:12px 8px 0}.ddx-mini{padding:10px 12px}.ddx-mini-cost{font-size:22px}}

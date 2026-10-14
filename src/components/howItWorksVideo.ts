@@ -1,4 +1,4 @@
-import Hls from 'hls.js';
+import type Hls from 'hls.js';
 
 const VIDEO_SELECTOR = '.video-howitworks';
 const WRAPPER_SELECTOR = '.video-wrapper';
@@ -12,8 +12,19 @@ const CONTROLS_VISIBLE_ATTR = 'data-video-controls-visible';
 const DEFAULT_VISIBLE_THRESHOLD = 0;
 const CONTROLS_HIDE_DELAY = 3000;
 const AUTOPLAY_FALLBACK_DELAY = 900;
+// hls.js is ~570KB, so it is fetched only on pages with the video, and only in browsers
+// without native HLS playback. Keep the version in step with package.json.
+const HLS_SRC = 'https://cdn.jsdelivr.net/npm/hls.js@1.7.1/dist/hls.min.js';
 const PLAY_ICON = `<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5.25 3.2v9.6l7-4.8-7-4.8Z" fill="currentColor"/></svg>`;
 const PAUSE_ICON = `<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4.5 3.25h2.25v9.5H4.5v-9.5Zm4.75 0h2.25v9.5H9.25v-9.5Z" fill="currentColor"/></svg>`;
+
+declare global {
+  interface Window {
+    Hls?: typeof Hls;
+  }
+}
+
+let hlsLoader: Promise<typeof Hls | undefined> | undefined;
 
 type HlsController = {
   destroy: () => void;
@@ -52,7 +63,6 @@ function initVideo(video: HTMLVideoElement) {
   let isInView = false;
   let shouldAutoResume = autoplay;
   let hlsController: HlsController | undefined;
-  let sourceAttached = false;
   let autoplayFallbackTimer = 0;
   let isAwaitingAutoplay = false;
 
@@ -66,6 +76,9 @@ function initVideo(video: HTMLVideoElement) {
   if (button) bindMuteButton(button, video, () => isInView && shouldAutoResume);
 
   const controlsVisibility = bindProgressVisibility(wrapper);
+
+  // Start fetching hls.js now so it is ready by the time playback is requested.
+  const hlsReady = canPlayNativeHls(video) ? undefined : loadHls();
 
   const revealVideo = () => {
     window.requestAnimationFrame(() => {
@@ -101,50 +114,48 @@ function initVideo(video: HTMLVideoElement) {
     );
   };
 
-  function attachSource() {
-    if (sourceAttached) return;
-    sourceAttached = true;
+  let sourceReady: Promise<void> | undefined;
 
-    if (canPlayNativeHls(video)) {
+  function attachSource() {
+    sourceReady ??= (async () => {
+      const HlsLib = hlsReady && (await hlsReady);
+
+      if (HlsLib?.isSupported()) {
+        const hls = new HlsLib();
+        hls.loadSource(source);
+        hls.attachMedia(video);
+        hls.on(HlsLib.Events.ERROR, (_event, data) => {
+          if (!data.fatal) return;
+
+          if (data.type === HlsLib.ErrorTypes.NETWORK_ERROR) {
+            hls.startLoad();
+            return;
+          }
+
+          if (data.type === HlsLib.ErrorTypes.MEDIA_ERROR) {
+            hls.recoverMediaError();
+            return;
+          }
+
+          hls.destroy();
+          hlsController = undefined;
+        });
+
+        hlsController = {
+          destroy: () => hls.destroy(),
+          startLoad: () => hls.startLoad(),
+        };
+        return;
+      }
+
       video.src = source;
       video.load();
-      return;
-    }
-
-    if (Hls.isSupported()) {
-      const hls = new Hls();
-      hls.loadSource(source);
-      hls.attachMedia(video);
-      hls.on(Hls.Events.ERROR, (_event, data) => {
-        if (!data.fatal) return;
-
-        if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-          hls.startLoad();
-          return;
-        }
-
-        if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
-          hls.recoverMediaError();
-          return;
-        }
-
-        hls.destroy();
-        hlsController = undefined;
-      });
-
-      hlsController = {
-        destroy: () => hls.destroy(),
-        startLoad: () => hls.startLoad(),
-      };
-      return;
-    }
-
-    video.src = source;
-    video.load();
+    })();
+    return sourceReady;
   }
 
   async function playVideo(isAutoplayAttempt: boolean) {
-    attachSource();
+    await attachSource();
     hlsController?.startLoad();
 
     if (isAutoplayAttempt) {
@@ -509,6 +520,20 @@ function bindProgressVisibility(wrapper: HTMLElement): ControlsVisibilityControl
   });
 
   return { releasePersistent, showPersistently };
+}
+
+function loadHls() {
+  hlsLoader ??= new Promise((resolve) => {
+    if (window.Hls) return resolve(window.Hls);
+    const script = document.createElement('script');
+    script.src = HLS_SRC;
+    script.async = true;
+    script.onload = () => resolve(window.Hls);
+    // Without hls.js the video falls back to a plain src, which fails gracefully.
+    script.onerror = () => resolve(undefined);
+    document.head.appendChild(script);
+  });
+  return hlsLoader;
 }
 
 function canPlayNativeHls(video: HTMLVideoElement) {
