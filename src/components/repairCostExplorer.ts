@@ -313,9 +313,9 @@ function ensureStyles() {
 
 // The card around the drawing. The panel's styles live in Webflow (`diagram_*` classes).
 const FIGURE_CARD_CSS = `
-.ddx.iso[data-theme="light"]{--anatomy-card:#f5f4f1;--anatomy-paper:#f5f4f1;--anatomy-lit:#d94b16;--anatomy-halo-opacity:.18;--ddx-line:#dfdcd5;background:transparent;color:var(--anatomy-text);font-family:Inter,Arial,sans-serif;text-align:left}
+.ddx.iso[data-theme="light"]{--anatomy-card:var(--base-color-brand--off-white-2-f5f4f1,#f5f4f1);--anatomy-paper:var(--anatomy-card);--anatomy-lit:#d94b16;--anatomy-halo-opacity:.18;--ddx-line:#dfdcd5;background:transparent;color:var(--anatomy-text);font-family:Inter,Arial,sans-serif;text-align:left}
 .ddx *{box-sizing:border-box}
-.ddx .iso-plate{padding:40px 18px 28px;border-radius:16px;background:var(--anatomy-card);box-shadow:0 1px 2px rgba(24,24,26,.06),0 8px 24px rgba(24,24,26,.06)}
+.ddx .iso-plate{padding:40px 18px 28px;border-radius:16px;background:transparent;box-shadow:none}
 .ddx-nav{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:12px}
 .ddx-current{min-width:12ch;color:var(--anatomy-strong);font-size:17px;font-weight:600;line-height:1.2;letter-spacing:.01em;text-align:center}
 .ddx-compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:440px;margin:14px auto 0}
